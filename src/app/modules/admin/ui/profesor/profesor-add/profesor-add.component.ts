@@ -15,14 +15,14 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 
 
 @Component({
-    selector: 'estudiante-add',
-    templateUrl: './estudiante-add.component.html',
-    styleUrls: ['./estudiante.component.scss'],
+    selector: 'profesor-add',
+    templateUrl: './profesor-add.component.html',
+    styleUrls: ['./profesor.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [MatIconModule, FormsModule, ReactiveFormsModule, MatStepperModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatCheckboxModule, MatRadioModule],
 })
-export class FormsEstudianteAdd implements OnInit {
+export class FormsProfesorAdd implements OnInit {
 
     form: FormGroup;
     @ViewChild('ToastInsertarUSU') ToastInsertarUSU: ElementRef;
@@ -39,21 +39,21 @@ export class FormsEstudianteAdd implements OnInit {
     }
     
 
-    crearEstudiante(estudiante) {
-        return this.http.post('http://localhost:8080/api/estudiantes', estudiante);
+    crearProfesor(profesor) {
+        return this.http.post('http://localhost:8080/api/profesores', profesor);
     }
 
 
     registrar() {
-        const estudiante = this.form.value;
+        const profesor = this.form.value;
         
-        this.crearEstudiante(estudiante).subscribe(
+        this.crearProfesor(profesor).subscribe(
             data => {
-                console.log('estudiante creado:', data);
+                console.log('profesor creado:', data);
                 this.form.reset();
                 this.showToast();
             },
-            error => console.error('Error al crear estudiante:', error)
+            error => console.error('Error al crear profesor:', error)
         );
     }
 

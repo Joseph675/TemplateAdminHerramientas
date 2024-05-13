@@ -1,0 +1,33 @@
+<form style="width: 780px;height: 520px;" class="flex flex-col mt-4 px-8 pt-10 bg-card shadow rounded overflow-hidden"
+    [formGroup]="form" (ngSubmit)="guardarCambios()">
+    <div class="flex flex-col gt-xs:flex-row">
+        
+        <p class="text-lg font-medium">Email</p>
+
+        <mat-form-field class="flex-auto">
+            <input matInput formControlName="email" [placeholder]="'Email Address'">
+        </mat-form-field>
+        
+        <p class="text-lg font-medium">Nombre</p>
+
+        <mat-form-field class="flex-auto gt-xs:pr-3">
+            <input matInput formControlName="nombre" [placeholder]="'Nombre'">
+        </mat-form-field>
+
+        <p class="text-lg font-medium">Apellido</p>
+
+        <mat-form-field class="flex-auto gt-xs:pr-3">
+            <input matInput formControlName="apellido" [placeholder]="'Apellido'">
+        </mat-form-field>
+
+    </div>
+
+
+    <div class="flex items-center justify-end border-t -mx-8 mt-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">
+        <button mat-button mat-dialog-close>Cancelar</button>
+
+        <button class="px-6 ml-3" mat-flat-button [color]="'primary'">
+            Guardar
+        </button>
+    </div>
+</form>

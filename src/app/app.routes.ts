@@ -108,9 +108,15 @@ export const appRoutes: Route[] = [
                     // estudiante
                     { path: 'estudiante', loadChildren: () => import('app/modules/admin/ui/estudiante/estudiante.routes') },
 
+                    // profesor
+                    { path: 'profesor', loadChildren: () => import('app/modules/admin/ui/profesor/profesor.routes') },
+
                     // materias
                     { path: 'materias', loadChildren: () => import('app/modules/admin/ui/materias/materias.routes') },
 
+
+                    // materias para estudiante
+                    { path: 'materias_por_estudiante', loadChildren: () => import('app/modules/admin/ui/materias_por_estudiante/materias_por_estudiante.routes') },
                    
 
                   

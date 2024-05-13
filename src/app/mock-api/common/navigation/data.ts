@@ -74,6 +74,27 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     }
                 ],
             },
+
+            {
+                id      : 'Profesor-interface.forms',
+                title   : 'Profesor',
+                type    : 'collapsable',
+                icon    : 'heroicons_outline:users',
+                children: [
+                    {
+                        id   : 'user-interface.forms.fields',
+                        title: 'Añadir Profesor',
+                        type : 'basic',
+                        link : '/ui/profesor/profesor-add',
+                    },
+                    {
+                        id   : 'user-interface.forms.layouts',
+                        title: 'Ver Profesor',
+                        type : 'basic',
+                        link : '/ui/profesor/profesor-table',
+                    }
+                ],
+            },
             {
                 id      : 'materia-interface.forms',
                 title   : 'Materias',
@@ -91,6 +112,26 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         title: 'Ver Materias',
                         type : 'basic',
                         link : '/ui/materias/materias-table',
+                    }
+                ],
+            },
+            {
+                id      : 'materia-interface.forms',
+                title   : 'Materias Por Estudiante',
+                type    : 'collapsable',
+                icon    : 'heroicons_outline:academic-cap',
+                children: [
+                    {
+                        id   : 'materia-interface.forms.fields',
+                        title: 'Añadir Materias a estudiate',
+                        type : 'basic',
+                        link : '/ui/materias_por_estudiante/materias_por_estudiante-add',
+                    },
+                    {
+                        id   : 'materia-interface.forms.layouts',
+                        title: 'Ver Materias de estudiante',
+                        type : 'basic',
+                        link : '/ui/materias_por_estudiante/materias_por_estudiante-table',
                     }
                 ],
             }
