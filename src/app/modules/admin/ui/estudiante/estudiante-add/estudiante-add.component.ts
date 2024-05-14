@@ -30,10 +30,10 @@ export class FormsEstudianteAdd implements OnInit {
 
     constructor(private http: HttpClient,private _formBuilder: UntypedFormBuilder) {
         this.form = this._formBuilder.group({
-            nombre: [''],
-            apellido: [''],
-            email: [''],
-            password: [''],
+            nombre: ['', Validators.required],
+            apellido: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', [Validators.required]],
             avatar: ['']
         });
     }
@@ -45,17 +45,31 @@ export class FormsEstudianteAdd implements OnInit {
 
 
     registrar() {
-        const estudiante = this.form.value;
-        
-        this.crearEstudiante(estudiante).subscribe(
-            data => {
-                console.log('estudiante creado:', data);
-                this.form.reset();
-                this.showToast();
-            },
-            error => console.error('Error al crear estudiante:', error)
-        );
+        if (this.form.valid) {
+            const estudiante = this.form.value;
+            
+            this.crearEstudiante(estudiante).subscribe(
+                data => {
+                    console.log('Estudiante creado:', data);
+                    this.form.reset();
+                    this.showToast();
+                },
+                error => {
+                    if (error.status === 409) {
+                        console.error('El estudiante ya existe en la base de datos');
+                        this.showToastExisteEstudiante();
+                    } else {
+                        console.error('Error al crear estudiante:', error);
+                    }
+                }
+            );
+        } else {
+            console.error('El formulario no es válido');
+            this.showToastFormularioNoValido();
+
+        }
     }
+    
 
 
     showToast() {
@@ -69,9 +83,28 @@ export class FormsEstudianteAdd implements OnInit {
         }, 3000);
     }
 
+    showToastExisteEstudiante() {
+        const toast = document.getElementById('toastexiste');
+        toast.classList.remove('hide');
+        toast.classList.add('show');
+    
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+        }, 3000);
+    }
+
+    showToastFormularioNoValido() {
+        const toast = document.getElementById('toastformulario');
+        toast.classList.remove('hide');
+        toast.classList.add('show');
+    
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+        }, 3000);
+    }
+
     ngOnInit(): void {
-       
-
-
     }
 }

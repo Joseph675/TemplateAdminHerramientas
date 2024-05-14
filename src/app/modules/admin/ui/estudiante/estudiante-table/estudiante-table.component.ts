@@ -21,8 +21,6 @@ export interface PeriodicElement {
   Eliminar: String;
 }
 
-
-
 @Component({
   selector: 'estudiante-table',
   styleUrl: 'estudiante-table.component.scss',
@@ -44,6 +42,7 @@ export class TableEstudiante implements OnInit {
     this.EstudiantesService.estudianteActualizado$.subscribe(() => {
       this.obtenerEstudiantes();
     });
+
 
 
     this.obtenerEstudiantes();
@@ -112,10 +111,15 @@ export class EstudianteEditarModal {
         console.log('Estudiante actualizado:', this.form.value.id_estudiante);
         this.EstudiantesService.estudianteActualizado$.next();
         this.dialogRef.close(this.form.value);
+        this.showToastEditar();
       },
-      error => console.error('Error al actualizar Estudiante:', error)
+      error => {
+        console.error('Error al actualizar Estudiante:', error);
+          this.showToastEmail();
+      }
     );
-  }
+}
+
 
 
   actualizarEstudiante(estudiante) {
@@ -123,8 +127,20 @@ export class EstudianteEditarModal {
   }
 
 
-  showToast() {
+  showToastEditar() {
     const toast = document.getElementById('toasteditar');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 3000);
+  }
+
+  
+  showToastEmail() {
+    const toast = document.getElementById('toastemail');
     toast.classList.remove('hide');
     toast.classList.add('show');
 
@@ -172,7 +188,8 @@ export class EstudiateEliminarModal {
       () => {
         this.showToast();
         console.log('Estudiante eliminado:', ID);
-        this.EstudiantesService.estudianteEliminado();
+        this.EstudiantesService.estudianteActualizado$.next();
+
       },
       error => console.error('Error al eliminar Estudiante:', error)
     );

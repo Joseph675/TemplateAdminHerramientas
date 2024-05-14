@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
-import { EstudiantesService } from '../../../../../services/estudiante.service';
+import { ProfesoresService } from '../../../../../services/profesor.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,14 +14,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 
 export interface PeriodicElement {
-  ID: number;
-  Nombre: string;
-  CorreoElectronico: string;
-  Editar: String;
-  Eliminar: String;
 }
-
-
 
 @Component({
   selector: 'profesor-table',
@@ -33,46 +26,41 @@ export interface PeriodicElement {
 export class TableProfesor implements OnInit {
 
   displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Editar', 'Eliminar'];
-  dataSource;
-  estudiantes = [];
-  estudianteAEditar = null; // Agrega esta línea
+  listaprofesores;
+  profesores = [];
+  profesorAEditar = null; // Agrega esta línea
   @ViewChild('miModal') miModal: ElementRef;
-  constructor(private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
+  constructor(private http: HttpClient, private ProfesoresService: ProfesoresService, public dialog: MatDialog) { }
   ngOnInit() {
-    this.EstudiantesService.estudianteActualizado$.subscribe(() => {
-      this.obtenerEstudiantes();
+    this.ProfesoresService.profesorActualizado$.subscribe(() => {
+      this.obtenerProfesores();
     });
-
-    this.EstudiantesService.estudianteActualizado$.subscribe(() => {
-      this.obtenerEstudiantes();
-    });
-
-    this.obtenerEstudiantes();
+    this.obtenerProfesores();
   }
 
-  obtenerEstudiantes() {
-    this.http.get('http://localhost:8080/api/estudiantes').subscribe(
-      (estudiantes: PeriodicElement[]) => {
-        this.dataSource = estudiantes;
+  obtenerProfesores() {
+    this.http.get('http://localhost:8080/api/profesores').subscribe(
+      (profesores: PeriodicElement[]) => {
+        this.listaprofesores = profesores;
       },
-      error => console.error('Error al obtener estudiantes:', error)
+      error => console.error('Error al obtener profesores:', error)
     );
   }
 
 
-  openDialogEstudiante(estudiante) {
-    this.estudianteAEditar = estudiante;
-    const dialogRef = this.dialog.open(EstudianteEditarModal, {
-      data: { estudianteAEditar: this.estudianteAEditar } 
+  openDialogEditar(profesor) {
+    this.profesorAEditar = profesor;
+    const dialogRef = this.dialog.open(ProfesorEditarModal, {
+      data: { profesorAEditar: this.profesorAEditar } 
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
     });
   }
 
-  openDialogEliminar(id_estudiante): void {
-    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
-      data: { ID: id_estudiante }  // Pasar el ID al diálogo
+  openDialogEliminar(id_profesor): void {
+    const dialogRef = this.dialog.open(ProfesorEliminarModal, {
+      data: { ID: id_profesor }  // Pasar el ID al diálogo
     });
   
     dialogRef.afterClosed().subscribe(result => {
@@ -90,36 +78,37 @@ export class TableProfesor implements OnInit {
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
 })
-export class EstudianteEditarModal {
+export class ProfesorEditarModal {
   form: FormGroup;
 
   constructor(
-    public dialogRef: MatDialogRef<EstudianteEditarModal>,
+    public dialogRef: MatDialogRef<ProfesorEditarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private http: HttpClient, private EstudiantesService: EstudiantesService
+    private http: HttpClient, private ProfesoresService: ProfesoresService
   ) {
     this.form = new FormGroup({
-      'id_estudiante': new FormControl(this.data.estudianteAEditar.id_estudiante),
-      'nombre': new FormControl(this.data.estudianteAEditar.nombre),
-      'apellido': new FormControl(this.data.estudianteAEditar.apellido),
-      'email': new FormControl(this.data.estudianteAEditar.email)
+      'id_profesor': new FormControl(this.data.profesorAEditar.id_profesor),
+      'nombre': new FormControl(this.data.profesorAEditar.nombre),
+      'apellido': new FormControl(this.data.profesorAEditar.apellido),
+      'email': new FormControl(this.data.profesorAEditar.email)
     });
   }
 
   guardarCambios() {
+    console.log(this.form.value)
     this.actualizarEstudiante(this.form.value).subscribe(
       () => {
-        console.log('Estudiante actualizado:', this.form.value.id_estudiante);
-        this.EstudiantesService.estudianteActualizado$.next();
+        console.log('Profesor actualizado:', this.form.value.id_profesor);
+        this.ProfesoresService.profesorActualizado$.next();
         this.dialogRef.close(this.form.value);
       },
-      error => console.error('Error al actualizar Estudiante:', error)
+      error => console.error('Error al actualizar Profesor:', error)
     );
   }
 
 
-  actualizarEstudiante(estudiante) {
-    return this.http.put(`http://localhost:8080/api/estudiantes/${estudiante.id_estudiante}`, estudiante, { responseType: 'text' });
+  actualizarEstudiante(profesor) {
+    return this.http.put(`http://localhost:8080/api/profesores/${profesor.id_profesor}`, profesor, { responseType: 'text' });
   }
 
 
@@ -153,26 +142,26 @@ export class EstudianteEditarModal {
     MatIconModule
   ],
 })
-export class DialogOverviewExampleDialog {
+export class ProfesorEliminarModal {
   constructor(
-    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    public dialogRef: MatDialogRef<ProfesorEliminarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,  // Inyectar los datos del diálogo
     private http: HttpClient,
-    private EstudiantesService: EstudiantesService
+    private ProfesoresService: ProfesoresService
   ) { }
 
   onNoClick(): void {
     this.dialogRef.close();
   }
 
-  eliminarEstudiante() {
+  eliminarProfesor() {
     const ID = this.data.ID;
 
-    this.http.delete(`http://localhost:8080/api/estudiantes/${ID}`, ).subscribe(
+    this.http.delete(`http://localhost:8080/api/profesores/${ID}`, ).subscribe(
       () => {
         this.showToast();
-        console.log('Estudiante eliminado:', ID);
-        this.EstudiantesService.estudianteEliminado();
+        console.log('profesore eliminado:', ID);
+        this.ProfesoresService.profesorEliminado();
       },
       error => console.error('Error al eliminar Estudiante:', error)
     );

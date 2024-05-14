@@ -1,13 +1,13 @@
 <div id="toasteliminar" class="toast hide">
     <div class="toast-body">
-        ¡Usuario eliminado con éxito!
+        ¡Profesor eliminado con éxito!
     </div>
 </div>
 
 
 <div id="toasteditar" class="toast hide">
     <div class="toast-body">
-        ¡Usuario editado con éxito!
+        ¡Profesor editado con éxito!
     </div>
 </div>
 
@@ -21,17 +21,17 @@
             <!-- Breadcrumbs -->
             <div class="flex flex-wrap items-center font-medium">
                 <div>
-                    <a class="whitespace-nowrap text-primary-500">Estudiantes</a>
+                    <a class="whitespace-nowrap text-primary-500">Profesores</a>
                 </div>
                 <div class="flex items-center ml-1 whitespace-nowrap">
                     <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                    <a class="ml-1 text-primary-500">Ver Estudiantes</a>
+                    <a class="ml-1 text-primary-500">Ver Profesores</a>
                 </div>
             </div>
             <!-- Title -->
             <div class="mt-2">
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    Ver Estudiantes
+                    Ver Profesores
                 </h2>
             </div>
         </div>
@@ -39,34 +39,34 @@
 
 
     <div class="flex-auto p-6 sm:p-10">
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table-margin"
+        <table mat-table [dataSource]="listaprofesores" class="mat-elevation-z8 table-margin"
             style="border-radius: 10px !important;">
 
             <!-- Position Column -->
             <ng-container matColumnDef="ID">
                 <th mat-header-cell *matHeaderCellDef> No. </th>
-                <td mat-cell *matCellDef="let estudiante"> {{estudiante.id_estudiante}} </td>
+                <td mat-cell *matCellDef="let profesor"> {{profesor.id_profesor}} </td>
             </ng-container>
 
             <!-- Name Column -->
             <ng-container matColumnDef="Nombre">
                 <th mat-header-cell *matHeaderCellDef> Nombre </th>
-                <td mat-cell *matCellDef="let estudiante"> {{ estudiante.nombre }} </td>
+                <td mat-cell *matCellDef="let profesor"> {{ profesor.nombre }} </td>
             </ng-container>
 
             <!-- Weight Column -->
             <ng-container matColumnDef="CorreoElectronico">
                 <th mat-header-cell *matHeaderCellDef> CorreoElectronico </th>
-                <td mat-cell *matCellDef="let estudiante"> {{estudiante.email}} </td>
+                <td mat-cell *matCellDef="let profesor"> {{profesor.email}} </td>
             </ng-container>
 
             
 
             <ng-container matColumnDef="Editar">
                 <th mat-header-cell *matHeaderCellDef> Editar </th>
-                <td mat-cell *matCellDef="let estudiante">
+                <td mat-cell *matCellDef="let profesor">
 
-                    <button mat-mini-fab color="primary" (click)="openDialogEstudiante(estudiante)">
+                    <button mat-mini-fab color="primary" (click)="openDialogEditar(profesor)">
                         <mat-icon svgIcon="mat_solid:edit"></mat-icon>
                     </button>
 
@@ -76,9 +76,9 @@
 
             <ng-container matColumnDef="Eliminar">
                 <th mat-header-cell *matHeaderCellDef> Eliminar </th>
-                <td mat-cell *matCellDef="let estudiante">
+                <td mat-cell *matCellDef="let profesor">
 
-                    <button mat-mini-fab color="warn" (click)="openDialogEliminar(estudiante.id_estudiante)">
+                    <button mat-mini-fab color="warn" (click)="openDialogEliminar(profesor.id_profesor)">
                         <mat-icon svgIcon="mat_solid:delete"></mat-icon>
                     </button>
                 </td>

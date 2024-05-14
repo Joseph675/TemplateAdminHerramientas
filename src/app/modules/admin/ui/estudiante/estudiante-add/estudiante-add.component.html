@@ -4,6 +4,20 @@
             ¡Estudiante creado con éxito!
         </div>
     </div>
+
+
+    <div id="toastexiste" class="toastexiste hide">
+        <div class="toast-body">
+            ¡Estudiante Ya Existe!
+        </div>
+    </div>
+
+
+    <div id="toastformulario" class="toastformulario hide">
+        <div class="toast-body">
+            ¡Completa todo el fomulario!
+        </div>
+    </div>
     <!-- Header -->
     <div
         class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
@@ -58,10 +72,12 @@
                     <mat-form-field class="flex-auto gt-xs:pr-3">
                         <input matInput formControlName="nombre" [placeholder]="'Nombre'">
                         <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
+
                     </mat-form-field>
                     <mat-form-field class="flex-auto gt-xs:pl-3">
                         <input matInput formControlName="apellido" [placeholder]="'Apellido'">
                         <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:globe-alt'"></mat-icon>
+
                     </mat-form-field>
                 </div>
                
