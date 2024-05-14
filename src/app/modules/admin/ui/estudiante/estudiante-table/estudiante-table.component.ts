@@ -38,14 +38,13 @@ export class TableEstudiante implements OnInit {
   estudianteAEditar = null; // Agrega esta línea
   @ViewChild('miModal') miModal: ElementRef;
   constructor(private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
+  
+  
   ngOnInit() {
     this.EstudiantesService.estudianteActualizado$.subscribe(() => {
       this.obtenerEstudiantes();
     });
 
-    this.EstudiantesService.estudianteActualizado$.subscribe(() => {
-      this.obtenerEstudiantes();
-    });
 
     this.obtenerEstudiantes();
   }
@@ -71,7 +70,7 @@ export class TableEstudiante implements OnInit {
   }
 
   openDialogEliminar(id_estudiante): void {
-    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
+    const dialogRef = this.dialog.open(EstudiateEliminarModal, {
       data: { ID: id_estudiante }  // Pasar el ID al diálogo
     });
   
@@ -98,6 +97,7 @@ export class EstudianteEditarModal {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient, private EstudiantesService: EstudiantesService
   ) {
+
     this.form = new FormGroup({
       'id_estudiante': new FormControl(this.data.estudianteAEditar.id_estudiante),
       'nombre': new FormControl(this.data.estudianteAEditar.nombre),
@@ -153,9 +153,9 @@ export class EstudianteEditarModal {
     MatIconModule
   ],
 })
-export class DialogOverviewExampleDialog {
+export class EstudiateEliminarModal {
   constructor(
-    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    public dialogRef: MatDialogRef<EstudiateEliminarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,  // Inyectar los datos del diálogo
     private http: HttpClient,
     private EstudiantesService: EstudiantesService
