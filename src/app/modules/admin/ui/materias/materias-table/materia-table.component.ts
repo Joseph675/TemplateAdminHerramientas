@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Inject,AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Inject, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
@@ -14,10 +14,6 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 
 export interface PeriodicElement {
-  ID: number;
-  Nombre: string;
-  Editar: String;
-  Eliminar: String;
 }
 
 
@@ -59,10 +55,11 @@ export class TableMateria implements OnInit {
   }
 
 
-  openDialogEstudiante(estudiante) {
-    this.materiaAEditar = estudiante;
+  openDialogMateria(materia) {
+    this.materiaAEditar = materia;
+    console.log(materia)
     const dialogRef = this.dialog.open(MateriaEditarModal, {
-      data: { materiaAEditar: this.materiaAEditar } 
+      data: { materiaAEditar: this.materiaAEditar }
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
@@ -70,10 +67,11 @@ export class TableMateria implements OnInit {
   }
 
   openDialogEliminar(id_materia): void {
+    console.log(id_materia)
     const dialogRef = this.dialog.open(MateriaEliminarModal, {
       data: { ID: id_materia }  // Pasar el ID al diálogo
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
@@ -98,8 +96,8 @@ export class MateriaEditarModal {
     private http: HttpClient, private MateriasService: MateriasService
   ) {
     this.form = new FormGroup({
-      'id_materia': new FormControl(this.data.materiaAEditar.id_materia),
-      'nombre_materia': new FormControl(this.data.materiaAEditar.nombre_materia)
+      'idMateria': new FormControl(this.data.materiaAEditar.idMateria),
+      'nombreMateria': new FormControl(this.data.materiaAEditar.nombreMateria)
     });
   }
 
@@ -109,14 +107,22 @@ export class MateriaEditarModal {
         console.log('Materia actualizado:', this.form.value.id_materia);
         this.MateriasService.materiaActualizado$.next();
         this.dialogRef.close(this.form.value);
+        this.showToast();
+
       },
-      error => console.error('Error al Materia Estudiante:', error)
+      error => {
+
+
+        console.error('Error al Materia Estudiante:', error);
+        this.dialogRef.close(this.form.value);
+        this.showToastNombre();
+      }
     );
   }
 
 
   actualizarMateria(materia) {
-    return this.http.put(`http://localhost:8080/api/materias/${materia.id_materia}`, materia, { responseType: 'text' });
+    return this.http.put(`http://localhost:8080/api/materias/${materia.idMateria}`, materia, { responseType: 'text' });
   }
 
 
@@ -131,6 +137,16 @@ export class MateriaEditarModal {
     }, 3000);
   }
 
+  showToastNombre() {
+    const toast = document.getElementById('toastnombre');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 3000);
+  }
 }
 
 
@@ -165,11 +181,12 @@ export class MateriaEliminarModal {
   eliminarMateria() {
     const ID = this.data.ID;
 
-    this.http.delete(`http://localhost:8080/api/materias/${ID}`, ).subscribe(
+    this.http.delete(`http://localhost:8080/api/materias/${ID}`,).subscribe(
       () => {
         this.showToast();
         console.log('Materia eliminado:', ID);
-        this.MateriasService.materiaEliminado();
+        this.MateriasService.materiaActualizado$.next();
+
       },
       error => console.error('Error al eliminar Materia:', error)
     );

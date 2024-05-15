@@ -33,7 +33,7 @@ table {
     width: 120px;
   }  
 
-  .toast {
+  .toasteditar {
     position: fixed;
     top: 20px;
     right: 20px;
@@ -48,12 +48,44 @@ table {
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
   }
+
+  .toastnombre {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-width: 200px;
+    max-width: 600px;
+    padding: 20px;
+    color: white;
+    z-index: 1000;
+    background-color: red;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .toasteliminar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    min-width: 200px;
+    max-width: 600px;
+    padding: 20px;
+    color: white;
+    z-index: 1000;
+    background-color: red;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
   
-  .toast.hide {
+  .toasteditar.hide, .toastnombre.hide, .toasteliminar.hide {
     opacity: 0;
   }
   
-  .toast.show {
+  .toasteditar.show, .toastnombre.show, .toasteliminar.show {
     opacity: 1;
   }
 

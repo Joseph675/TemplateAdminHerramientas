@@ -28,12 +28,12 @@ export class FormsMateriaAdd implements OnInit {
     @ViewChild('ToastInsertarUSU') ToastInsertarUSU: ElementRef;
 
 
-    constructor(private http: HttpClient,private _formBuilder: UntypedFormBuilder) {
+    constructor(private http: HttpClient, private _formBuilder: UntypedFormBuilder) {
         this.form = this._formBuilder.group({
-            nombre_materia: ['']
+            nombreMateria: ['', Validators.required]
         });
     }
-    
+
 
     crearMateria(materia) {
         return this.http.post('http://localhost:8080/api/materias', materia);
@@ -41,16 +41,24 @@ export class FormsMateriaAdd implements OnInit {
 
 
     registrar() {
-        const materia = this.form.value;
-        console.log(materia);
-        this.crearMateria(materia).subscribe(
-            data => {
-                console.log('materia creado:', data);
-                this.form.reset();
-                this.showToast();
-            },
-            error => console.error('Error al crear materia:', error)
-        );
+        if (this.form.valid) {
+            const materia = this.form.value;
+            this.crearMateria(materia).subscribe(
+                data => {
+                    console.log('materia creado:', data);
+                    this.form.reset();
+                    this.showToast();
+                },
+                error => {
+                    console.error('Error al crear materia:', error.error);
+                    // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
+                    this.showToastExisteMateria();
+                }
+            );
+        } else {
+            console.error('El formulario no es válido');
+            this.showToastFormularioNoValido();
+        }
     }
 
 
@@ -65,8 +73,30 @@ export class FormsMateriaAdd implements OnInit {
         }, 3000);
     }
 
+    showToastFormularioNoValido() {
+        const toast = document.getElementById('toastformulario');
+        toast.classList.remove('hide');
+        toast.classList.add('show');
+    
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+        }, 3000);
+    }
+
+    showToastExisteMateria() {
+        const toast = document.getElementById('toastexiste');
+        toast.classList.remove('hide');
+        toast.classList.add('show');
+    
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+        }, 3000);
+    }
+
     ngOnInit(): void {
-       
+
 
 
     }

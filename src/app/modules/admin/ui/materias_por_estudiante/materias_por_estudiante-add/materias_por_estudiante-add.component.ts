@@ -51,10 +51,10 @@ export class Formsmaterias_por_estudiante implements OnInit {
 
   constructor(private http: HttpClient, private _formBuilder: FormBuilder) {
     this.form = this._formBuilder.group({
-      id_estudiante: ['',],
-      id_materia: ['',],
-      dias: ['',],
-      hora: ['',],
+      id_estudiante: ['', Validators.required],
+      id_materia: ['', Validators.required],
+      dias: ['', Validators.required],
+      hora: ['', Validators.required],
 
     });
   }
@@ -79,52 +79,64 @@ export class Formsmaterias_por_estudiante implements OnInit {
     this.http.get<Materia[]>('http://localhost:8080/api/materias').subscribe(
       materias => {
         this.materias = materias;
+        console.log(materias)
+
       },
       error => console.error('Error al obtener materias:', error)
     );
   }
 
 
-  crearMateriaEstudiante(materiaestudiante) {
-    console.log(materiaestudiante)
-    return this.http.post('http://localhost:8080/api/añadirmateriaestudiante', materiaestudiante);
-  }
-
   registrar() {
     if (this.form.valid) {
-        const materiaestudiante = this.form.value;
-
-        // Función para convertir la hora a formato de 24 horas
-        function convertTo24Hour(time) {
-            var elements = time.split(':');
-            var hours = elements[0];
-            var minutes = elements[1];
-            var ampm = elements[1].substr(-2);
-            if (ampm == 'PM' && hours != '12') {
-                hours = parseInt(hours) + 12;
-            } else if (ampm == 'AM' && hours == '12') {
-                hours = '00';
-            }
-            return `${hours}:${minutes.substr(0, 2)}`;
+      const data = this.form.value;
+      // Función para convertir la hora a formato de 24 horas
+      function convertTo24Hour(time) {
+        var elements = time.split(':');
+        var hours = elements[0];
+        var minutes = elements[1];
+        var ampm = elements[1].substr(-2);
+        if (ampm == 'PM' && hours != '12') {
+          hours = parseInt(hours) + 12;
+        } else if (ampm == 'AM' && hours == '12') {
+          hours = '00';
         }
+        return `${hours}:${minutes.substr(0, 2)}`;
 
-        // Convertir la hora a formato de 24 horas
-        materiaestudiante.hora = convertTo24Hour(materiaestudiante.hora);
+      }
 
-        console.log(materiaestudiante)
+      // Convertir la hora a formato de 24 horas
+      data.hora = convertTo24Hour(data.hora);
 
-        this.crearMateriaEstudiante(materiaestudiante).subscribe(
-            data => {
-                console.log('materiaestudiante creado:', data);
-                this.form.reset();
-                this.showToast();
-            },
-            error => console.error('Error al crear materiaestudiante:', error)
+      console.log(data)
+
+      this.http.post('http://localhost:8080/api/materiaestudiante', data)
+        .subscribe(
+          response => {
+            console.log(response);
+            // Aquí puedes manejar la respuesta de tu API
+            // Por ejemplo, puedes mostrar un mensaje de éxito
+            this.showToast();
+            this.form.reset();
+
+          },
+          error => {
+            console.error(error);
+            this.showToastExisteRegistro();
+
+            // Aquí puedes manejar los errores
+            // Por ejemplo, puedes mostrar un mensaje de error
+          }
         );
     } else {
-        console.error('El formulario no es válido');
+      console.log('Formulario no válido');
+      this.showToastFormularioNoValido();
+
+      // Aquí puedes manejar el caso en que el formulario no sea válido
+      // Por ejemplo, puedes mostrar un mensaje de error
     }
-}
+  }
+
 
 
 
@@ -138,4 +150,28 @@ export class Formsmaterias_por_estudiante implements OnInit {
       toast.classList.add('hide');
     }, 3000);
   }
+
+  showToastFormularioNoValido() {
+    const toast = document.getElementById('toastformulario');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+    }, 3000);
+}
+
+showToastExisteRegistro() {
+    const toast = document.getElementById('toastexiste');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+    }, 3000);
+}
+
+
 }

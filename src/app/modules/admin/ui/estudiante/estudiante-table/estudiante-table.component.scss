@@ -34,6 +34,8 @@ section {
   width: 120px;
 }
 
+
+
 .toasteditar {
   position: fixed;
   top: 20px;
@@ -83,14 +85,14 @@ section {
 }
 
 
-.toast.hide,
+.toasteditar.hide,
 .toastemail.hide,
 .toastEliminar.hide {
   opacity: 0;
 }
 
-.toast.show,
-.toastexiste.show,
+.toasteditar.show,
+.toastemail.show,
 .toastEliminar.show {
   opacity: 1;
 }

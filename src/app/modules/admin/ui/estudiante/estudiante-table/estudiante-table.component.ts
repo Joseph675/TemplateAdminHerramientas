@@ -5,6 +5,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { EstudiantesService } from '../../../../../services/estudiante.service';
+import { ToastService } from '../../../../../services/toast.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,15 +36,24 @@ export class TableEstudiante implements OnInit {
   estudiantes = [];
   estudianteAEditar = null; // Agrega esta línea
   @ViewChild('miModal') miModal: ElementRef;
-  constructor(private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
-  
+  constructor(private toastService: ToastService, private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
   
   ngOnInit() {
     this.EstudiantesService.estudianteActualizado$.subscribe(() => {
       this.obtenerEstudiantes();
     });
 
+    this.toastService.showToastEditar.subscribe(() => {
+      this.showToastEditar();
+    });
 
+    this.toastService.showToastEmail.subscribe(() => {
+      this.showToastEmail();
+    });
+
+    this.toastService.showToastEliminar.subscribe(() => {
+      this.showToastEliminar();
+    });
 
     this.obtenerEstudiantes();
   }
@@ -78,6 +88,40 @@ export class TableEstudiante implements OnInit {
     });
   }
 
+
+  showToastEditar() {
+    const toast = document.getElementById('toasteditar');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 3000);
+  }
+
+  
+  showToastEmail() {
+    const toast = document.getElementById('toastemail');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+    console.log("hoalaaaa")
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 3000);
+  }
+
+  showToastEliminar() {
+    const toast = document.getElementById('toastEliminar');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 3000);
+  }
+
 }
 
 
@@ -85,13 +129,15 @@ export class TableEstudiante implements OnInit {
 @Component({
   selector: 'dialog-content-example-dialog',
   templateUrl: 'estudiante-edit-modal.component.html',
+  styleUrl: 'estudiante-table.component.scss',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
 })
 export class EstudianteEditarModal {
   form: FormGroup;
 
-  constructor(
+
+  constructor(private toastService: ToastService,
     public dialogRef: MatDialogRef<EstudianteEditarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient, private EstudiantesService: EstudiantesService
@@ -110,15 +156,18 @@ export class EstudianteEditarModal {
       () => {
         console.log('Estudiante actualizado:', this.form.value.id_estudiante);
         this.EstudiantesService.estudianteActualizado$.next();
+        this.toastService.showEditar();
         this.dialogRef.close(this.form.value);
-        this.showToastEditar();
       },
       error => {
         console.error('Error al actualizar Estudiante:', error);
-          this.showToastEmail();
+        this.dialogRef.close(this.form.value);
+        this.toastService.showEmail();
+
       }
     );
 }
+
 
 
 
@@ -127,35 +176,13 @@ export class EstudianteEditarModal {
   }
 
 
-  showToastEditar() {
-    const toast = document.getElementById('toasteditar');
-    toast.classList.remove('hide');
-    toast.classList.add('show');
-
-    setTimeout(() => {
-      toast.classList.remove('show');
-      toast.classList.add('hide');
-    }, 3000);
-  }
-
-  
-  showToastEmail() {
-    const toast = document.getElementById('toastemail');
-    toast.classList.remove('hide');
-    toast.classList.add('show');
-
-    setTimeout(() => {
-      toast.classList.remove('show');
-      toast.classList.add('hide');
-    }, 3000);
-  }
-
 }
 
 
 @Component({
   selector: 'dialog-overview-example-dialog',
   templateUrl: 'estudiante-delete-modal.component.html',
+  styleUrl: 'estudiante-table.component.scss',
   standalone: true,
   imports: [
     MatFormFieldModule,
@@ -170,8 +197,7 @@ export class EstudianteEditarModal {
   ],
 })
 export class EstudiateEliminarModal {
-  constructor(
-    public dialogRef: MatDialogRef<EstudiateEliminarModal>,
+  constructor(private toastService: ToastService, public dialogRef: MatDialogRef<EstudiateEliminarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,  // Inyectar los datos del diálogo
     private http: HttpClient,
     private EstudiantesService: EstudiantesService
@@ -186,23 +212,15 @@ export class EstudiateEliminarModal {
 
     this.http.delete(`http://localhost:8080/api/estudiantes/${ID}`, ).subscribe(
       () => {
-        this.showToast();
         console.log('Estudiante eliminado:', ID);
         this.EstudiantesService.estudianteActualizado$.next();
+        this.toastService.showEliminar();
 
       },
       error => console.error('Error al eliminar Estudiante:', error)
     );
   }
 
-  showToast() {
-    const toast = document.getElementById('toasteliminar');
-    toast.classList.remove('hide');
-    toast.classList.add('show');
-
-    setTimeout(() => {
-      toast.classList.remove('show');
-      toast.classList.add('hide');
-    }, 3000);
-  }
+  
 }
+

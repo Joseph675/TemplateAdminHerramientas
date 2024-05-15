@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, Inject,AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Inject, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule,MatTableDataSource } from '@angular/material/table';
 import { EstudiantesService } from '../../../../../services/estudiante.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 
 
 export interface PeriodicElement {
@@ -28,16 +29,19 @@ export interface PeriodicElement {
   styleUrl: 'materias_por_estudiante-table.component.scss',
   templateUrl: 'materias_por_estudiante-table.component.html',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule],
+  imports: [MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule,MatPaginatorModule],
 })
 export class Tablematerias_por_estudiante implements OnInit {
 
   displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Editar', 'Eliminar'];
   dataSource;
   estudiantes = [];
-  estudianteAEditar = null; // Agrega esta línea
+  estudianteAEditar = null;
   @ViewChild('miModal') miModal: ElementRef;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   constructor(private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
+  
   ngOnInit() {
     this.EstudiantesService.estudianteActualizado$.subscribe(() => {
       this.obtenerEstudiantes();
@@ -53,34 +57,16 @@ export class Tablematerias_por_estudiante implements OnInit {
   obtenerEstudiantes() {
     this.http.get('http://localhost:8080/api/estudiantes').subscribe(
       (estudiantes: PeriodicElement[]) => {
-        this.dataSource = estudiantes;
+        this.dataSource = new MatTableDataSource(estudiantes); // Usa MatTableDataSource
+        this.dataSource.paginator = this.paginator; // Asigna el paginador aquí
       },
       error => console.error('Error al obtener estudiantes:', error)
     );
-  }
-
-
-  openDialogEstudiante(estudiante) {
-    this.estudianteAEditar = estudiante;
-    const dialogRef = this.dialog.open(EstudianteEditarModal, {
-      data: { estudianteAEditar: this.estudianteAEditar } 
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
-  }
-
-  openDialogEliminar(id_estudiante): void {
-    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
-      data: { ID: id_estudiante }  // Pasar el ID al diálogo
-    });
-  
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-  }
-
 }
+
+  // Resto de tu código...
+}
+
 
 
 
