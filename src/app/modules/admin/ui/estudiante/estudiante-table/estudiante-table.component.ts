@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, Inject,AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Inject, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { EstudiantesService } from '../../../../../services/estudiante.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -12,7 +12,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
-
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatMenuModule } from '@angular/material/menu';
 
 export interface PeriodicElement {
   ID: number;
@@ -27,17 +28,17 @@ export interface PeriodicElement {
   styleUrl: 'estudiante-table.component.scss',
   templateUrl: 'estudiante-table.component.html',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule],
+  imports: [MatMenuModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule, MatPaginatorModule],
 })
 export class TableEstudiante implements OnInit {
 
-  displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Editar', 'Eliminar'];
+  displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Rol', 'Acciones'];
   dataSource;
-  estudiantes = [];
   estudianteAEditar = null; // Agrega esta línea
   @ViewChild('miModal') miModal: ElementRef;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(private toastService: ToastService, private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
-  
+
   ngOnInit() {
     this.EstudiantesService.estudianteActualizado$.subscribe(() => {
       this.obtenerEstudiantes();
@@ -61,17 +62,24 @@ export class TableEstudiante implements OnInit {
   obtenerEstudiantes() {
     this.http.get('http://localhost:8080/api/estudiantes').subscribe(
       (estudiantes: PeriodicElement[]) => {
-        this.dataSource = estudiantes;
+        for (let i = 0; i < estudiantes.length; i++) {
+          let estudiante = estudiantes[i];
+          // Aquí puedes realizar operaciones adicionales en cada estudiante
+          console.log(estudiante);
+        }
+        this.dataSource = new MatTableDataSource(estudiantes); // Usa MatTableDataSource
+        this.dataSource.paginator = this.paginator; // Asigna el paginador aquí
       },
       error => console.error('Error al obtener estudiantes:', error)
     );
   }
 
 
+
   openDialogEstudiante(estudiante) {
     this.estudianteAEditar = estudiante;
     const dialogRef = this.dialog.open(EstudianteEditarModal, {
-      data: { estudianteAEditar: this.estudianteAEditar } 
+      data: { estudianteAEditar: this.estudianteAEditar }
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
@@ -82,7 +90,7 @@ export class TableEstudiante implements OnInit {
     const dialogRef = this.dialog.open(EstudiateEliminarModal, {
       data: { ID: id_estudiante }  // Pasar el ID al diálogo
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
@@ -99,7 +107,7 @@ export class TableEstudiante implements OnInit {
     }, 3000);
   }
 
-  
+
   showToastEmail() {
     const toast = document.getElementById('toastemail');
     toast.classList.remove('hide');
@@ -120,6 +128,20 @@ export class TableEstudiante implements OnInit {
       toast.classList.remove('show');
       toast.classList.add('hide');
     }, 3000);
+  }
+
+
+
+  exportarexcel() {
+    window.location.href = 'http://localhost:8080/api/estudiantes/exportExcel';
+  }
+
+  exportarword() {
+    window.location.href = 'http://localhost:8080/api/estudiantes/exportWord';
+  }
+
+  exportartxt() {
+    window.location.href = 'http://localhost:8080/api/estudiantes/exportTxt';
   }
 
 }
@@ -166,9 +188,7 @@ export class EstudianteEditarModal {
 
       }
     );
-}
-
-
+  }
 
 
   actualizarEstudiante(estudiante) {
@@ -210,7 +230,7 @@ export class EstudiateEliminarModal {
   eliminarEstudiante() {
     const ID = this.data.ID;
 
-    this.http.delete(`http://localhost:8080/api/estudiantes/${ID}`, ).subscribe(
+    this.http.delete(`http://localhost:8080/api/estudiantes/${ID}`,).subscribe(
       () => {
         console.log('Estudiante eliminado:', ID);
         this.EstudiantesService.estudianteActualizado$.next();
@@ -221,6 +241,6 @@ export class EstudiateEliminarModal {
     );
   }
 
-  
+
 }
 

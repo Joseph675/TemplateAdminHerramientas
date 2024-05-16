@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule,MatTableDataSource } from '@angular/material/table';
 import { MateriasService } from '../../../../../services/materia.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
@@ -11,6 +11,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import { MatMenuModule } from '@angular/material/menu';
 
 
 export interface PeriodicElement {
@@ -23,15 +25,17 @@ export interface PeriodicElement {
   styleUrl: 'materia-table.component.scss',
   templateUrl: 'materia-table.component.html',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule],
+  imports: [MatPaginatorModule, MatMenuModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule],
 })
 export class TableMateria implements OnInit {
 
-  displayedColumns: string[] = ['ID', 'Nombre', 'Editar', 'Eliminar'];
+  displayedColumns: string[] = ['ID', 'Nombre', 'Acciones'];
   dataSource;
   materias = [];
   materiaAEditar = null; // Agrega esta línea
   @ViewChild('miModal') miModal: ElementRef;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   constructor(private http: HttpClient, private MateriasService: MateriasService, public dialog: MatDialog) { }
   ngOnInit() {
     this.MateriasService.materiaActualizado$.subscribe(() => {
@@ -48,7 +52,11 @@ export class TableMateria implements OnInit {
   obtenerMaterias() {
     this.http.get('http://localhost:8080/api/materias').subscribe(
       (materias: PeriodicElement[]) => {
-        this.dataSource = materias;
+
+
+        this.dataSource = new MatTableDataSource(materias); // Usa MatTableDataSource
+        this.dataSource.paginator = this.paginator; // Asigna el paginador aquí
+
       },
       error => console.error('Error al obtener materias:', error)
     );
@@ -180,7 +188,7 @@ export class MateriaEliminarModal {
 
   eliminarMateria() {
     const ID = this.data.ID;
-
+    console.log(ID)
     this.http.delete(`http://localhost:8080/api/materias/${ID}`,).subscribe(
       () => {
         this.showToast();

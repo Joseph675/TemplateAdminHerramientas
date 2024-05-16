@@ -56,37 +56,30 @@
 
             <!-- Name Column -->
             <ng-container matColumnDef="Nombre">
-                <th mat-header-cell *matHeaderCellDef> Nombre </th>
-                <td mat-cell *matCellDef="let materia"> {{ materia.nombreMateria }} </td>
+                <th mat-header-cell *matHeaderCellDef class="centered"> Nombre </th>
+                <td mat-cell *matCellDef="let materia" class="centered"> {{ materia.nombreMateria }} </td>
             </ng-container>
 
             
 
-            <ng-container matColumnDef="Editar">
-                <th mat-header-cell *matHeaderCellDef> Editar </th>
-                <td mat-cell *matCellDef="let materia">
+            <ng-container matColumnDef="Acciones">
+                <th mat-header-cell *matHeaderCellDef class="centered"> Acciones </th>
+                <td mat-cell *matCellDef="let materia" class="centered">
 
-                    <button mat-mini-fab color="primary" (click)="openDialogMateria(materia)">
-                        <mat-icon svgIcon="mat_solid:edit"></mat-icon>
-                    </button>
+                    <mat-icon style="color: blue;" svgIcon="heroicons_outline:pencil-square" (click)="openDialogMateria(materia)"></mat-icon>
 
+                    <mat-icon style="color: red;"  svgIcon="heroicons_outline:trash" (click)="openDialogEliminar(materia.idMateria)"></mat-icon>
 
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="Eliminar">
-                <th mat-header-cell *matHeaderCellDef> Eliminar </th>
-                <td mat-cell *matCellDef="let materia">
-
-                    <button mat-mini-fab color="warn" (click)="openDialogEliminar(materia.idMateria)">
-                        <mat-icon svgIcon="mat_solid:delete"></mat-icon>
-                    </button>
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+            aria-label="Select page of periodic elements">
+        </mat-paginator>
     </div>
 
 

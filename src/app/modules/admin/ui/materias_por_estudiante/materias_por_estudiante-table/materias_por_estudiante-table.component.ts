@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, Inject, AfterViewInit } from '@angular/core';
+import { NgModule, Component, OnInit, ViewChild, ElementRef, Inject, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule,MatTableDataSource } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { EstudiantesService } from '../../../../../services/estudiante.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
@@ -11,8 +11,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { CommonModule } from '@angular/common';
 
 export interface PeriodicElement {
   ID: number;
@@ -29,42 +29,93 @@ export interface PeriodicElement {
   styleUrl: 'materias_por_estudiante-table.component.scss',
   templateUrl: 'materias_por_estudiante-table.component.html',
   standalone: true,
-  imports: [MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule,MatPaginatorModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule, MatPaginatorModule],
 })
 export class Tablematerias_por_estudiante implements OnInit {
 
-  displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Editar', 'Eliminar'];
+  displayedColumns: string[] = ['ID', 'Nombre', 'Materias', 'Acciones'];
   dataSource;
   estudiantes = [];
+  materias: any = {};
   estudianteAEditar = null;
   @ViewChild('miModal') miModal: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
-  
+
   ngOnInit() {
     this.EstudiantesService.estudianteActualizado$.subscribe(() => {
-      this.obtenerEstudiantes();
+      this.obtenerMateriasEstudiantes();
     });
-
-    this.EstudiantesService.estudianteActualizado$.subscribe(() => {
-      this.obtenerEstudiantes();
-    });
-
     this.obtenerEstudiantes();
+    this.obtenerMaterias();
+    this.obtenerMateriasEstudiantes();
   }
 
-  obtenerEstudiantes() {
-    this.http.get('http://localhost:8080/api/estudiantes').subscribe(
-      (estudiantes: PeriodicElement[]) => {
-        this.dataSource = new MatTableDataSource(estudiantes); // Usa MatTableDataSource
-        this.dataSource.paginator = this.paginator; // Asigna el paginador aquí
+  obtenerMateriasEstudiantes() {
+    this.http.get('http://localhost:8080/api/materiaestudiante').subscribe(
+      (materiaestudiante: any[]) => {
+        let estudiantesMaterias = {};
+        for (let i = 0; i < materiaestudiante.length; i++) {
+          let me = materiaestudiante[i];
+          let nombreEstudiante = this.estudiantes[me.id_estudiante];
+          let nombreMateria = this.materias[me.id_materia];
+          if (!estudiantesMaterias[nombreEstudiante]) {
+            estudiantesMaterias[nombreEstudiante] = { materias: new Set([nombreMateria]), id: me.id };
+          } else {
+            estudiantesMaterias[nombreEstudiante].materias.add(nombreMateria);
+          }
+        }
+        let estudiantesMateriasArray = [];
+        for (let estudiante in estudiantesMaterias) {
+          estudiantesMateriasArray.push({ nombre: estudiante, materias: Array.from(estudiantesMaterias[estudiante].materias).join(', '), id: estudiantesMaterias[estudiante].id });
+        }
+        this.dataSource = new MatTableDataSource(estudiantesMateriasArray);
+        this.dataSource.paginator = this.paginator;
       },
-      error => console.error('Error al obtener estudiantes:', error)
+      error => console.error('Error al obtener materiaestudiante:', error)
     );
 }
 
-  // Resto de tu código...
+
+
+
+  obtenerEstudiantes() {
+    this.http.get('http://localhost:8080/api/estudiantes').subscribe(
+      (estudiantes: any[]) => {
+        for (let i = 0; i < estudiantes.length; i++) {
+          let estudiante = estudiantes[i];
+          this.estudiantes[estudiante.id_estudiante] = estudiante.nombre + ' ' + estudiante.apellido;
+
+        }
+      },
+      error => console.error('Error al obtener estudiantes:', error)
+    );
+  }
+
+  obtenerMaterias() {
+    this.http.get('http://localhost:8080/api/materias').subscribe(
+      (materias: any[]) => {
+        for (let i = 0; i < materias.length; i++) {
+          let materia = materias[i];
+          this.materias[materia.idMateria] = materia.nombreMateria;
+        }
+      },
+      error => console.error('Error al obtener materias:', error)
+    );
+  }
+
+
+  openDialogEliminar(id): void {
+    console.log(id)
+    const dialogRef = this.dialog.open(MateriaEstudiateEliminarModal, {
+      data: { ID: id }  // Pasar el ID al diálogo
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
 }
 
 
@@ -139,9 +190,9 @@ export class EstudianteEditarModal {
     MatIconModule
   ],
 })
-export class DialogOverviewExampleDialog {
+export class MateriaEstudiateEliminarModal {
   constructor(
-    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    public dialogRef: MatDialogRef<MateriaEstudiateEliminarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,  // Inyectar los datos del diálogo
     private http: HttpClient,
     private EstudiantesService: EstudiantesService
@@ -154,7 +205,7 @@ export class DialogOverviewExampleDialog {
   eliminarEstudiante() {
     const ID = this.data.ID;
 
-    this.http.delete(`http://localhost:8080/api/estudiantes/${ID}`, ).subscribe(
+    this.http.delete(`http://localhost:8080/api/estudiantes/${ID}`,).subscribe(
       () => {
         this.showToast();
         console.log('Estudiante eliminado:', ID);
