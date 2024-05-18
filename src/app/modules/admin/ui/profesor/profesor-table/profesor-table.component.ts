@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Inject,AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Inject, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
@@ -25,7 +25,7 @@ export interface PeriodicElement {
 })
 export class TableProfesor implements OnInit {
 
-  displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Editar', 'Eliminar'];
+  displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Acciones'];
   listaprofesores;
   profesores = [];
   profesorAEditar = null; // Agrega esta línea
@@ -50,8 +50,10 @@ export class TableProfesor implements OnInit {
 
   openDialogEditar(profesor) {
     this.profesorAEditar = profesor;
+    console.log(this.profesorAEditar)
+
     const dialogRef = this.dialog.open(ProfesorEditarModal, {
-      data: { profesorAEditar: this.profesorAEditar } 
+      data: { profesorAEditar: this.profesorAEditar }
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
@@ -62,7 +64,7 @@ export class TableProfesor implements OnInit {
     const dialogRef = this.dialog.open(ProfesorEliminarModal, {
       data: { ID: id_profesor }  // Pasar el ID al diálogo
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
@@ -95,25 +97,38 @@ export class ProfesorEditarModal {
   }
 
   guardarCambios() {
-    console.log(this.form.value)
-    this.actualizarEstudiante(this.form.value).subscribe(
+    const profesor = this.form.value;
+    this.http.put(`http://localhost:8080/api/profesores/${profesor.id_profesor}`, profesor, { responseType: 'text' }).subscribe(
       () => {
-        console.log('Profesor actualizado:', this.form.value.id_profesor);
+        console.log('Profesor actualizado:', profesor.id_profesor);
         this.ProfesoresService.profesorActualizado$.next();
-        this.dialogRef.close(this.form.value);
+        this.dialogRef.close(profesor);
+        this.showToast();
       },
-      error => console.error('Error al actualizar Profesor:', error)
+      error => {
+        console.error('Error al actualizar Profesor:', error);
+        this.showToastEmail();
+        this.dialogRef.close(profesor);
+      }
     );
   }
+  
 
-
-  actualizarEstudiante(profesor) {
-    return this.http.put(`http://localhost:8080/api/profesores/${profesor.id_profesor}`, profesor, { responseType: 'text' });
-  }
 
 
   showToast() {
     const toast = document.getElementById('toasteditar');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 3000);
+  }
+
+  showToastEmail() {
+    const toast = document.getElementById('toastemail');
     toast.classList.remove('hide');
     toast.classList.add('show');
 
@@ -157,11 +172,11 @@ export class ProfesorEliminarModal {
   eliminarProfesor() {
     const ID = this.data.ID;
 
-    this.http.delete(`http://localhost:8080/api/profesores/${ID}`, ).subscribe(
+    this.http.delete(`http://localhost:8080/api/profesores/${ID}`,).subscribe(
       () => {
         this.showToast();
         console.log('profesore eliminado:', ID);
-        this.ProfesoresService.profesorEliminado();
+        this.ProfesoresService.profesorActualizado$.next();
       },
       error => console.error('Error al eliminar Estudiante:', error)
     );

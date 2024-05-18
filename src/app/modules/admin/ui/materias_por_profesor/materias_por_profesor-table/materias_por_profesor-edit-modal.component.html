@@ -3,21 +3,27 @@
 
     <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef class="centered"> Nombre </th>
-        <td mat-cell *matCellDef="let materiaestudiante" class="centered"> {{materiaestudiante.nombre}} </td>
+        <td mat-cell *matCellDef="let materiaprofesor" class="centered"> {{materiaprofesor.nombre}} </td>
     </ng-container>
 
     <ng-container matColumnDef="materia">
         <th mat-header-cell *matHeaderCellDef class="centered"> Materia </th>
-        <td mat-cell *matCellDef="let materiaestudiante" class="centered"> {{materiaestudiante.materias}} </td>
+        <td mat-cell *matCellDef="let materiaprofesor" class="centered"> {{materiaprofesor.materias}} </td>
     </ng-container>
 
     
 
+      <ng-container matColumnDef="hora">
+        <th mat-header-cell *matHeaderCellDef class="centered"> Hora </th>
+        <td mat-cell *matCellDef="let materiaprofesor; let i = index" class="centered">
+          <input type="time" *ngIf="materiaprofesoresFormGroups && materiaprofesoresFormGroups[i]" [formControl]="materiaprofesoresFormGroups[i].get('hora')">
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="dias">
+      <ng-container matColumnDef="dias">
         <th mat-header-cell *matHeaderCellDef class="centered"> Dia </th>
-        <td mat-cell *matCellDef="let materiaestudiante; let i = index" class="centered">
-          <mat-select *ngIf="materiaestudiantesFormGroups && materiaestudiantesFormGroups[i]" [formControl]="materiaestudiantesFormGroups[i].get('dias')">
+        <td mat-cell *matCellDef="let materiaprofesor; let i = index" class="centered">
+          <mat-select *ngIf="materiaprofesoresFormGroups && materiaprofesoresFormGroups[i]" [formControl]="materiaprofesoresFormGroups[i].get('dias')">
             <mat-option value="Lunes">Lunes</mat-option>
             <mat-option value="Martes">Martes</mat-option>
             <mat-option value="Miercoles">Miercoles</mat-option>
@@ -27,22 +33,14 @@
           </mat-select>
         </td>
       </ng-container>
-      
-      <ng-container matColumnDef="hora">
-        <th mat-header-cell *matHeaderCellDef class="centered"> Hora </th>
-        <td mat-cell *matCellDef="let materiaestudiante; let i = index" class="centered">
-          <input type="time" *ngIf="materiaestudiantesFormGroups && materiaestudiantesFormGroups[i]" [formControl]="materiaestudiantesFormGroups[i].get('hora')">
-        </td>
-      </ng-container>
-      
 
 
     <ng-container matColumnDef="Acciones">
         <th mat-header-cell *matHeaderCellDef class="centered"> Acciones </th>
-        <td mat-cell *matCellDef="let materiaestudiante" class="centered">
+        <td mat-cell *matCellDef="let materiaprofesor" class="centered">
             <mat-icon style="color: blue;" svgIcon="heroicons_outline:hand-thumb-up" (click)="guardarCambios()"></mat-icon>
 
-            <mat-icon style="color: red;" svgIcon="heroicons_outline:trash" (click)="eliminarEstudiante()"></mat-icon>
+            <mat-icon style="color: red;" svgIcon="heroicons_outline:trash" (click)="eliminarProfesor()"></mat-icon>
         </td>
     </ng-container>
 

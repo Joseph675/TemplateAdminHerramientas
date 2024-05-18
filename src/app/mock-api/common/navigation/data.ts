@@ -55,6 +55,25 @@ export const defaultNavigation: FuseNavigationItem[] = [
         icon    : 'heroicons_outline:rectangle-stack',
         children: [
             {
+                id      : 'administrador-interface.forms',
+                title   : 'Administradores',
+                type    : 'collapsable',
+                icon    : 'heroicons_outline:users',
+                children: [
+                    {
+                        id   : 'user-interface.forms.fields',
+                        title: 'Añadir Administradores',
+                        type : 'basic',
+                        link : '/ui/administrador/administrador-add',
+                    },
+                    {
+                        id   : 'user-interface.forms.layouts',
+                        title: 'Ver Administradores',
+                        type : 'basic',
+                        link : '/ui/administrador/administrador-table',
+                    }
+                ],
+            },{
                 id      : 'estudiante-interface.forms',
                 title   : 'Estudiantes',
                 type    : 'collapsable',
@@ -132,6 +151,26 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         title: 'Ver Materias de estudiante',
                         type : 'basic',
                         link : '/ui/materias_por_estudiante/materias_por_estudiante-table',
+                    }
+                ],
+            },
+            {
+                id      : 'materia-interface.forms',
+                title   : 'Materias Por Profesor',
+                type    : 'collapsable',
+                icon    : 'heroicons_outline:academic-cap',
+                children: [
+                    {
+                        id   : 'materia-interface.forms.fields',
+                        title: 'Añadir Materias a profesor',
+                        type : 'basic',
+                        link : '/ui/materias_por_profesor/materias_por_profesor-add',
+                    },
+                    {
+                        id   : 'materia-interface.forms.layouts',
+                        title: 'Ver Materias de profesor',
+                        type : 'basic',
+                        link : '/ui/materias_por_profesor/materias_por_profesor-table',
                     }
                 ],
             }

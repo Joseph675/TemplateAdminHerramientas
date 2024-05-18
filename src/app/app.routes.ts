@@ -79,11 +79,11 @@ export const appRoutes: Route[] = [
             {
                 path: 'dashboards', children: [
                     { path: 'project', loadChildren: () => import('app/modules/admin/dashboards/project/project.routes') },
-                    
+
                 ]
             },
 
-           
+
 
             // Pages
             {
@@ -105,6 +105,10 @@ export const appRoutes: Route[] = [
             {
                 path: 'ui', children: [
 
+                     // admin
+                     { path: 'administrador', loadChildren: () => import('app/modules/admin/ui/administrador/administrador.routes') },
+
+
                     // estudiante
                     { path: 'estudiante', loadChildren: () => import('app/modules/admin/ui/estudiante/estudiante.routes') },
 
@@ -117,9 +121,12 @@ export const appRoutes: Route[] = [
 
                     // materias para estudiante
                     { path: 'materias_por_estudiante', loadChildren: () => import('app/modules/admin/ui/materias_por_estudiante/materias_por_estudiante.routes') },
-                   
 
-                  
+                    // materias para profesor
+                    { path: 'materias_por_profesor', loadChildren: () => import('app/modules/admin/ui/materias_por_profesor/materias_por_profesor.routes') },
+
+
+
                 ]
             },
 

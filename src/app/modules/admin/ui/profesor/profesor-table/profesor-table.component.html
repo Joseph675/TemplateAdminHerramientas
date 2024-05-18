@@ -11,6 +11,12 @@
     </div>
 </div>
 
+<div id="toastemail" class="toastemail hide">
+    <div class="toast-body">
+        ¡Email ya está en uso!
+    </div>
+</div>
+
 
 <div class="flex flex-col flex-auto min-w-0">
 
@@ -62,27 +68,17 @@
 
             
 
-            <ng-container matColumnDef="Editar">
-                <th mat-header-cell *matHeaderCellDef> Editar </th>
-                <td mat-cell *matCellDef="let profesor">
+            <ng-container matColumnDef="Acciones">
+            <th mat-header-cell *matHeaderCellDef class="centered"> Acciones </th>
+            <td mat-cell *matCellDef="let profesor" class="centered">
 
-                    <button mat-mini-fab color="primary" (click)="openDialogEditar(profesor)">
-                        <mat-icon svgIcon="mat_solid:edit"></mat-icon>
-                    </button>
+               
+                <mat-icon style="color: blue;" svgIcon="heroicons_outline:pencil-square" (click)="openDialogEditar(profesor)"></mat-icon>
 
+                <mat-icon style="color: red;"  svgIcon="heroicons_outline:trash" (click)="openDialogEliminar(profesor.id_profesor)"></mat-icon>
 
-                </td>
-            </ng-container>
-
-            <ng-container matColumnDef="Eliminar">
-                <th mat-header-cell *matHeaderCellDef> Eliminar </th>
-                <td mat-cell *matCellDef="let profesor">
-
-                    <button mat-mini-fab color="warn" (click)="openDialogEliminar(profesor.id_profesor)">
-                        <mat-icon svgIcon="mat_solid:delete"></mat-icon>
-                    </button>
-                </td>
-            </ng-container>
+            </td>
+         </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

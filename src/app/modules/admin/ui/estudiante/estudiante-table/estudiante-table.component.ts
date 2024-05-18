@@ -64,8 +64,6 @@ export class TableEstudiante implements OnInit {
       (estudiantes: PeriodicElement[]) => {
         for (let i = 0; i < estudiantes.length; i++) {
           let estudiante = estudiantes[i];
-          // Aquí puedes realizar operaciones adicionales en cada estudiante
-          console.log(estudiante);
         }
         this.dataSource = new MatTableDataSource(estudiantes); // Usa MatTableDataSource
         this.dataSource.paginator = this.paginator; // Asigna el paginador aquí

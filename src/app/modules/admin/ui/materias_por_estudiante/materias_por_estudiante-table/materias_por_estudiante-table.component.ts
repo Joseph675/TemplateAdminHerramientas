@@ -13,16 +13,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
-
-export interface PeriodicElement {
-  ID: number;
-  Nombre: string;
-  CorreoElectronico: string;
-  Editar: String;
-  Eliminar: String;
-}
-
-
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'materias_por_estudiante-table',
@@ -60,25 +51,22 @@ export class Tablematerias_por_estudiante implements OnInit {
           let me = materiaestudiante[i];
           let nombreEstudiante = this.estudiantes[me.id_estudiante];
           let nombreMateria = this.materias[me.id_materia];
-          if (!estudiantesMaterias[nombreEstudiante]) {
-            estudiantesMaterias[nombreEstudiante] = { materias: new Set([nombreMateria]), id: me.id };
+          if (!estudiantesMaterias[me.id_estudiante]) {
+            estudiantesMaterias[me.id_estudiante] = { nombre: nombreEstudiante, materias: new Set([nombreMateria]), id: me.id };
           } else {
-            estudiantesMaterias[nombreEstudiante].materias.add(nombreMateria);
+            estudiantesMaterias[me.id_estudiante].materias.add(nombreMateria);
           }
         }
         let estudiantesMateriasArray = [];
-        for (let estudiante in estudiantesMaterias) {
-          estudiantesMateriasArray.push({ nombre: estudiante, materias: Array.from(estudiantesMaterias[estudiante].materias).join(', '), id: estudiantesMaterias[estudiante].id });
+        for (let id_estudiante in estudiantesMaterias) {
+          estudiantesMateriasArray.push({ nombre: estudiantesMaterias[id_estudiante].nombre, materias: Array.from(estudiantesMaterias[id_estudiante].materias).join(', '), id: estudiantesMaterias[id_estudiante].id, id_estudiante: id_estudiante });
         }
         this.dataSource = new MatTableDataSource(estudiantesMateriasArray);
         this.dataSource.paginator = this.paginator;
       },
       error => console.error('Error al obtener materiaestudiante:', error)
     );
-}
-
-
-
+  }
 
   obtenerEstudiantes() {
     this.http.get('http://localhost:8080/api/estudiantes').subscribe(
@@ -106,61 +94,174 @@ export class Tablematerias_por_estudiante implements OnInit {
   }
 
 
-  openDialogEliminar(id): void {
-    console.log(id)
-    const dialogRef = this.dialog.open(MateriaEstudiateEliminarModal, {
-      data: { ID: id }  // Pasar el ID al diálogo
-    });
+  openDialogEstudiante(estudiante) {
+    this.estudianteAEditar = estudiante;
 
+    const dialogRef = this.dialog.open(EstudianteEditarModal, {
+      data: { estudianteAEditar: this.estudianteAEditar }
+    });
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      console.log(`Dialog result: ${result}`);
+      this.obtenerMateriasEstudiantes();
     });
   }
+
+
 }
 
 
-
+export interface PeriodicElement {
+  ID: number;
+  Nombre: string;
+  CorreoElectronico: string;
+  Rol: string;
+  Acciones: string;
+}
 
 @Component({
   selector: 'dialog-content-example-dialog',
   templateUrl: 'materias_por_estudiante-edit-modal.component.html',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [MatSelectModule,CommonModule,MatPaginatorModule, MatIconModule, MatTableModule, MatDialogModule, MatButtonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
 })
 export class EstudianteEditarModal {
   form: FormGroup;
-
-  constructor(
-    public dialogRef: MatDialogRef<EstudianteEditarModal>,
+  datasource;
+  estudiantes = [];
+  materias: any = {};
+  displayedColumns: string[] = ['nombre', 'materia', 'hora', 'dias', 'Acciones'];
+  materiaestudiantes: any;
+  materiaestudiantesFormGroups: any;
+  constructor(public dialogRef: MatDialogRef<EstudianteEditarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient, private EstudiantesService: EstudiantesService
   ) {
-    this.form = new FormGroup({
-      'id_estudiante': new FormControl(this.data.estudianteAEditar.id_estudiante),
-      'nombre': new FormControl(this.data.estudianteAEditar.nombre),
-      'apellido': new FormControl(this.data.estudianteAEditar.apellido),
-      'email': new FormControl(this.data.estudianteAEditar.email)
-    });
+    this.materiaestudiantesFormGroups = [];
+    this.materiaestudiantes = [];
   }
 
-  guardarCambios() {
-    this.actualizarEstudiante(this.form.value).subscribe(
-      () => {
-        console.log('Estudiante actualizado:', this.form.value.id_estudiante);
-        this.EstudiantesService.estudianteActualizado$.next();
-        this.dialogRef.close(this.form.value);
+  ngOnInit() {
+    this.obtenerEstudiantes();
+    this.obtenerMaterias();
+    this.obtenerMateriasEstudiantes(this.data.estudianteAEditar.id_estudiante);
+  }
+
+
+  obtenerMateriasEstudiantes(id_estudiante) {
+    this.http.get('http://localhost:8080/api/materiaestudiante/porEstudiante/' + id_estudiante).subscribe(
+      (materiaestudiante: any[]) => {
+        this.materiaestudiantes = materiaestudiante;
+        let estudiantesMateriasArray = [];
+        this.materiaestudiantesFormGroups = []; // Asegúrate de inicializar el array
+        for (let i = 0; i < materiaestudiante.length; i++) {
+          let me = materiaestudiante[i];
+          let nombreEstudiante = this.estudiantes[me.id_estudiante];
+          let nombreMateria = this.materias[me.id_materia];
+          estudiantesMateriasArray.push({ nombre: nombreEstudiante, materias: nombreMateria, id: me.id, id_estudiante: me.id_estudiante, hora: me.hora, dias: me.dias });
+  
+          // Crea un nuevo FormGroup para este estudiante y añádelo al array
+          let formGroup = new FormGroup({
+            dias: new FormControl(me.dias),
+            hora: new FormControl(me.hora.slice(0, 5))
+          });
+          this.materiaestudiantesFormGroups.push(formGroup);
+          console.log(this.materiaestudiantesFormGroups)
+        }
+        this.datasource = estudiantesMateriasArray;
+        
       },
-      error => console.error('Error al actualizar Estudiante:', error)
+      error => console.error('Error al obtener materiaestudiante:', error)
+    );
+  }
+  
+
+
+  obtenerEstudiantes() {
+    this.http.get('http://localhost:8080/api/estudiantes').subscribe(
+      (estudiantes: any[]) => {
+        for (let i = 0; i < estudiantes.length; i++) {
+          let estudiante = estudiantes[i];
+          this.estudiantes[estudiante.id_estudiante] = estudiante.nombre + ' ' + estudiante.apellido;
+        }
+      },
+      error => console.error('Error al obtener estudiantes:', error)
     );
   }
 
-
-  actualizarEstudiante(estudiante) {
-    return this.http.put(`http://localhost:8080/api/estudiantes/${estudiante.id_estudiante}`, estudiante, { responseType: 'text' });
+  obtenerMaterias() {
+    this.http.get('http://localhost:8080/api/materias').subscribe(
+      (materias: any[]) => {
+        for (let i = 0; i < materias.length; i++) {
+          let materia = materias[i];
+          this.materias[materia.idMateria] = materia.nombreMateria;
+        }
+      },
+      error => console.error('Error al obtener materias:', error)
+    );
   }
 
+  eliminarEstudiante() {
+    const ID = this.data.estudianteAEditar.id;
+    this.http.delete(`http://localhost:8080/api/materiaestudiante/${ID}`,).subscribe(
+      () => {
+        console.log('Estudiante eliminado:', ID);
+        this.EstudiantesService.estudianteEliminado();
+        this.obtenerMateriasEstudiantes(this.data.estudianteAEditar.id_estudiante);
+        this.dialogRef.close();
+        this.showToastEliminar();
 
-  showToast() {
+
+      },
+      error => console.error('Error al eliminar Estudiante:', error)
+    );
+  }
+
+  guardarCambios() {
+    if (this.materiaestudiantes) {
+      for (let i = 0; i < this.materiaestudiantes.length; i++) {
+        let materiaestudiante = this.materiaestudiantes[i];
+        let formGroup = this.materiaestudiantesFormGroups[i];
+        console.log('Cambios para ' + materiaestudiante.nombre + ':', formGroup.value);
+  
+        // Actualiza el estudiante en el servidor
+        let estudianteActualizado = {
+          ...materiaestudiante,
+          dias: formGroup.value.dias,
+          hora: formGroup.value.hora
+        };
+
+        console.log(estudianteActualizado)
+  
+        this.http.put(`http://localhost:8080/api/materiaestudiante/${estudianteActualizado.id}`, estudianteActualizado, { responseType: 'text' }).subscribe(
+          () => {
+            console.log('Estudiante actualizado:', estudianteActualizado.id);
+            this.EstudiantesService.estudianteActualizado$.next();
+            this.dialogRef.close();
+            this.showToastEditar();
+
+          },
+          error => {
+            console.error('Error al actualizar Estudiante:', error);
+          }
+        );
+      }
+    }
+  }
+  
+  
+
+  showToastEliminar() {
+    const toast = document.getElementById('toatsliminar');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+    }, 3000);
+  }
+
+  showToastEditar() {
     const toast = document.getElementById('toasteditar');
     toast.classList.remove('hide');
     toast.classList.add('show');
@@ -171,7 +272,10 @@ export class EstudianteEditarModal {
     }, 3000);
   }
 
+
+
 }
+
 
 
 @Component({
@@ -191,6 +295,8 @@ export class EstudianteEditarModal {
   ],
 })
 export class MateriaEstudiateEliminarModal {
+  dataSource;
+
   constructor(
     public dialogRef: MatDialogRef<MateriaEstudiateEliminarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,  // Inyectar los datos del diálogo

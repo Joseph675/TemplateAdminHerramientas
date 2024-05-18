@@ -1,0 +1,119 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <div id="toast" class="toast hide">
+        <div class="toast-body">
+            ¡Materia añadida con éxito!
+        </div>
+    </div>
+
+    <div id="toastformulario" class="toastformulario hide">
+        <div class="toast-body">
+            ¡Completa todo el fomulario!
+        </div>
+    </div>
+
+    <div id="toastexiste" class="toastexiste hide">
+        <div class="toast-body">
+            ¡Ya hay un registro igual!
+        </div>
+    </div>
+    <!-- Header -->
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500">Materias Por Profesor   </a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">Añadir Materias a Profesors</a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Añadir Materias a Profesors
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+
+        <div class="max-w-3xl">
+
+            <form class="flex flex-col mt-4 px-8 pt-10 bg-card shadow rounded overflow-hidden" [formGroup]="form"
+                (ngSubmit)="registrar()">
+                <br>
+
+                <div class="flex">
+                    <mat-form-field class="w-full" >
+                        <mat-label>Seleccionar Profesor</mat-label>
+
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:user'" matPrefix></mat-icon>
+                        <mat-select formControlName="id_profesor">
+                            <mat-option *ngFor="let profesor of profesores"
+                                [value]="profesor.id_profesor">{{profesor.nombre}} {{profesor.apellido}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+
+
+                <br>
+                <div class="flex">
+                    <mat-form-field class="w-full" >
+                        <mat-label>Seleccionar materia</mat-label>
+
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:book-open'" matPrefix></mat-icon>
+                        <mat-select formControlName="id_materia">
+                            <mat-option *ngFor="let materia of materias"
+                                [value]="materia.idMateria">{{materia.nombreMateria}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <br>
+                  
+
+                <div class="flex">
+                    <mat-form-field class="w-full"  style="margin-right: 10px;">
+                        <mat-label>Dias</mat-label>
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:calendar-days'" matPrefix></mat-icon>
+                        <mat-select formControlName="dias">
+                            <mat-option value="Lunes">Lunes</mat-option>
+                            <mat-option value="Martes">Martes</mat-option>
+                            <mat-option value="Miercoles">Miercoles</mat-option>
+                            <mat-option value="Jueves">Jueves</mat-option>
+                            <mat-option value="Viernes">Viernes</mat-option>
+                            <mat-option value="Sabado">Sabado</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <br>
+
+
+                    <mat-form-field class="w-full" >
+                        <mat-label>Hora</mat-label>
+
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:clock'" matPrefix></mat-icon>
+                        <input matInput formControlName="hora" [ngxTimepicker]="timePicker" />
+                        <ngx-material-timepicker #timePicker></ngx-material-timepicker>
+                    </mat-form-field>
+                </div>
+
+
+                <div class="flex items-center justify-end border-t -mx-8 mt-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">
+
+                    <button class="px-6 ml-3" mat-flat-button [color]="'primary'">
+                        Registrar
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

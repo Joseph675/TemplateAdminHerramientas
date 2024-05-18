@@ -1,13 +1,13 @@
 <div id="toatsliminar" class="toatsliminar hide">
     <div class="toast-body">
-        ¡Estudiante eliminado con éxito!
+        ¡Profesor eliminado con éxito!
     </div>
 </div>
 
 
 <div id="toasteditar" class="toatseditar hide">
     <div class="toast-body">
-        ¡Estudiante editado con éxito!
+        ¡Profesor editado con éxito!
     </div>
 </div>
 
@@ -21,17 +21,17 @@
             <!-- Breadcrumbs -->
             <div class="flex flex-wrap items-center font-medium">
                 <div>
-                    <a class="whitespace-nowrap text-primary-500">Materias de Estudiante</a>
+                    <a class="whitespace-nowrap text-primary-500">Materias de Profesores</a>
                 </div>
                 <div class="flex items-center ml-1 whitespace-nowrap">
                     <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                    <a class="ml-1 text-primary-500">Ver Materias de Estudiante</a>
+                    <a class="ml-1 text-primary-500">Ver Materias de Profesor</a>
                 </div>
             </div>
             <!-- Title -->
             <div class="mt-2">
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    Ver Materias de Estudiante
+                    Ver Materias de Profesor
                 </h2>
             </div>
         </div>
@@ -45,19 +45,19 @@
             <!-- Position Column -->
             <ng-container matColumnDef="ID">
                 <th mat-header-cell *matHeaderCellDef> No. </th>
-                <td mat-cell *matCellDef="let dataSource in asdasdasd; let i=index"> {{i+1}} </td>
+                <td mat-cell *matCellDef="let profesorstudiante; let i=index"> {{i+1}} </td>
             </ng-container>
 
             <ng-container matColumnDef="Nombre">
                 <th mat-header-cell *matHeaderCellDef> Nombre </th>
-                <td mat-cell *matCellDef="let materiaestudiante"> {{ materiaestudiante.nombre }} {{ materiaestudiante.apellido }} </td>
+                <td mat-cell *matCellDef="let profesorstudiante"> {{ profesorstudiante.nombre }} {{ profesorstudiante.apellido }} </td>
             </ng-container>
 
             <!-- Name Column -->
             <ng-container matColumnDef="Materias">
                 <th mat-header-cell *matHeaderCellDef> Materias </th>
-                <td mat-cell *matCellDef="let estudiante"> 
-                    <span *ngFor="let materia of estudiante.materias.split(',')" class="contorno"> {{ materia.trim() }} </span>
+                <td mat-cell *matCellDef="let profesorstudiante"> 
+                    <span *ngFor="let materia of profesorstudiante.materias.split(',')" class="contorno"> {{ materia.trim() }} </span>
                 </td>
             </ng-container>
 
@@ -65,8 +65,8 @@
 
             <ng-container matColumnDef="Acciones">
                 <th mat-header-cell *matHeaderCellDef class="centered"> Acciones </th>
-                <td mat-cell *matCellDef="let estudiante" class="centered">
-                    <mat-icon style="color: blue;" svgIcon="heroicons_outline:pencil-square" (click)="openDialogEstudiante(estudiante)"></mat-icon>
+                <td mat-cell *matCellDef="let profesorstudiante" class="centered">
+                    <mat-icon style="color: blue;" svgIcon="heroicons_outline:pencil-square" (click)="openDialogEstudiante(profesorstudiante)"></mat-icon>
                 </td>
             </ng-container>
 
