@@ -9,20 +9,20 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
-import { HttpClient, HttpHeaders } from '@angular/common/http'; 
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // Asegúrate de importar HttpHeaders
 import { FormGroup, FormBuilder } from '@angular/forms';
 
 
 
 @Component({
-    selector: 'estudiante-add',
-    templateUrl: './estudiante-add.component.html',
-    styleUrls: ['./estudiante.component.scss'],
+    selector: 'administrador-add',
+    templateUrl: './administrador-add.component.html',
+    styleUrls: ['./administrador.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [MatIconModule, FormsModule, ReactiveFormsModule, MatStepperModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatCheckboxModule, MatRadioModule],
 })
-export class FormsEstudianteAdd implements OnInit {
+export class FormsAdministradorAdd implements OnInit {
 
     form: FormGroup;
     @ViewChild('ToastInsertarUSU') ToastInsertarUSU: ElementRef;
@@ -35,32 +35,32 @@ export class FormsEstudianteAdd implements OnInit {
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required]],
             avatar: [''],
-            rol: ['estudiante']
+            rol: ['administrador']
         });
     }
     
 
-    crearEstudiante(estudiante) {
-        return this.http.post('http://localhost:8080/api/estudiantes', estudiante);
+    crearAdministrador(administrador) {
+        return this.http.post('http://localhost:8080/api/administradores', administrador);
     }
 
 
     registrar() {
         if (this.form.valid) {
-            const estudiante = this.form.value;
+            const administrador = this.form.value;
             
-            this.crearEstudiante(estudiante).subscribe(
+            this.crearAdministrador(administrador).subscribe(
                 data => {
-                    console.log('Estudiante creado:', data);
+                    console.log('Administrador creado:', data);
                     this.form.reset();
                     this.showToast();
                 },
                 error => {
                     if (error.status === 409) {
-                        console.error('El estudiante ya existe en la base de datos');
+                        console.error('El administrador ya existe en la base de datos');
                         this.showToastExisteEstudiante();
                     } else {
-                        console.error('Error al crear estudiante:', error);
+                        console.error('Error al crear administrador:', error);
                     }
                 }
             );

@@ -1,14 +1,15 @@
 import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
-import { ActivitiesComponent } from 'app/modules/admin/pages/activities/activities.component';
-import { ActivitiesService } from 'app/modules/admin/pages/activities/activities.service';
+import { TableActivities } from 'app/modules/admin/pages/activities/actividades-table/activities.component';
+import { FormsActividadesAdd } from 'app/modules/admin/pages/activities/actividades-form/activities.component';
 
 export default [
     {
-        path     : '',
-        component: ActivitiesComponent,
-        resolve  : {
-            activities: () => inject(ActivitiesService).getActivities(),
-        },
+        path     : 'actividades-table',
+        component: TableActivities,
+    },
+    {
+        path     : 'actividades-add',
+        component: FormsActividadesAdd,
     },
 ] as Routes;

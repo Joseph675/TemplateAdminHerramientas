@@ -24,12 +24,26 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type    : 'group',
         icon    : 'heroicons_outline:document',
         children: [
+           
             {
-                id   : 'pages.activities',
-                title: 'Activities',
-                type : 'basic',
-                icon : 'heroicons_outline:bars-3-bottom-left',
-                link : '/pages/activities',
+                id      : 'actividades-interface.forms',
+                title   : 'Actividades',
+                type    : 'collapsable',
+                icon    : 'heroicons_outline:users',
+                children: [
+                    {
+                        id   : 'actividades-interface.forms.fields',
+                        title: 'Añadir actividades',
+                        type : 'basic',
+                        link : '/pages/activities/actividades-add',
+                    },
+                    {
+                        id   : 'actividades-interface.forms.layouts',
+                        title: 'Ver actividades',
+                        type : 'basic',
+                        link : '/pages/activities/actividades-table',
+                    }
+                ],
             },
           
             {

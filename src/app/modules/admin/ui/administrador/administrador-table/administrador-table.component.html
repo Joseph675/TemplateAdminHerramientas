@@ -1,0 +1,111 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+
+
+    <div id="toastEliminar" class="toastEliminar hide">
+        <div class="toast-body">
+            ¡Administrador eliminado con éxito!
+        </div>
+    </div>
+
+
+    <div id="toasteditar" class="toasteditar hide">
+        <div class="toast-body">
+            ¡Administrador editado con éxito!
+        </div>
+    </div>
+
+    <div id="toastemail" class="toastemail hide">
+        <div class="toast-body">
+            ¡Email ya está en uso!
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <!-- Breadcrumbs -->
+            <div class="flex flex-wrap items-center font-medium">
+                <div>
+                    <a class="whitespace-nowrap text-primary-500">Administrador</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">Ver Administrador</a>
+                </div>
+            </div>
+            <!-- Title -->
+            <div class="mt-2 flex justify-between items-center"> <!-- Agrega las clases flex, justify-between y items-center -->
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Ver Administrador
+                </h2>
+                <button mat-button [matMenuTriggerFor]="menu" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Exportar Administrador</button>
+                <mat-menu #menu="matMenu">
+                    <button (click)="exportarexcel()" mat-menu-item>Excel</button>
+                    <button (click)="exportarword()" mat-menu-item>Word</button>
+                    <button (click)="exportartxt()" mat-menu-item>Txt</button>
+
+                </mat-menu>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <div class="flex-auto p-6 sm:p-10">
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table-margin"
+            style="border-radius: 10px !important;">
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="ID">
+                <th mat-header-cell *matHeaderCellDef> No. </th>
+                <td mat-cell *matCellDef="let estudiante"> {{estudiante.id_estudiante}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="Nombre">
+                <th mat-header-cell *matHeaderCellDef class="centered"> Nombre </th>
+                <td mat-cell *matCellDef="let estudiante" class="centered">  {{ estudiante.nombre }} {{ estudiante.apellido }} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="CorreoElectronico">
+                <th mat-header-cell *matHeaderCellDef class="centered"> CorreoElectronico </th>
+                <td mat-cell *matCellDef="let estudiante" class="centered"> {{estudiante.email}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Rol">
+                <th mat-header-cell *matHeaderCellDef class="centered"> Rol </th>
+                <td mat-cell *matCellDef="let estudiante" class="centered"><span class="contorno">{{estudiante.rol}} </span></td>
+            </ng-container>
+
+
+
+            <ng-container matColumnDef="Acciones">
+                <th mat-header-cell *matHeaderCellDef class="centered"> Acciones </th>
+                <td mat-cell *matCellDef="let administrador" class="centered">
+
+                   
+                    <mat-icon style="color: blue;" svgIcon="heroicons_outline:pencil-square" (click)="openDialogAdministrador(administrador)"></mat-icon>
+
+                    <mat-icon style="color: red;"  svgIcon="heroicons_outline:trash" (click)="openDialogEliminar(administrador.id_administrador)"></mat-icon>
+
+                </td>
+            </ng-container>
+
+           
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+            aria-label="Select page of periodic elements">
+        </mat-paginator>
+    </div>
+
+
+
+
+
+
+</div>

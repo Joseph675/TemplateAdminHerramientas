@@ -105,10 +105,9 @@ export const appRoutes: Route[] = [
             {
                 path: 'ui', children: [
 
-                     // admin
-                     { path: 'administrador', loadChildren: () => import('app/modules/admin/ui/administrador/administrador.routes') },
-
-
+                      // administrador
+                    { path: 'administrador', loadChildren: () => import('app/modules/admin/ui/administrador/administrador.routes') },
+           
                     // estudiante
                     { path: 'estudiante', loadChildren: () => import('app/modules/admin/ui/estudiante/estudiante.routes') },
 

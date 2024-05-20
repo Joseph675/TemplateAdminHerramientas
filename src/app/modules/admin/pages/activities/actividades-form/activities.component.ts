@@ -13,32 +13,35 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormGroup, FormBuilder } from '@angular/forms';
 
 
-
 @Component({
-    selector: 'estudiante-add',
-    templateUrl: './estudiante-add.component.html',
-    styleUrls: ['./estudiante.component.scss'],
+    selector: 'activityForm',
+    templateUrl: './activities.component.html',
+    styleUrls: ['./activities.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [MatIconModule, FormsModule, ReactiveFormsModule, MatStepperModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatCheckboxModule, MatRadioModule],
+    
 })
-export class FormsEstudianteAdd implements OnInit {
+export class FormsActividadesAdd implements OnInit {
+
 
     form: FormGroup;
     @ViewChild('ToastInsertarUSU') ToastInsertarUSU: ElementRef;
-
-
     constructor(private http: HttpClient,private _formBuilder: UntypedFormBuilder) {
         this.form = this._formBuilder.group({
             nombre: ['', Validators.required],
             apellido: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required]],
-            avatar: [''],
-            rol: ['estudiante']
+            avatar: ['']
         });
     }
-    
+
+    ngOnInit(): void {
+       
+    }
+
+
 
     crearEstudiante(estudiante) {
         return this.http.post('http://localhost:8080/api/estudiantes', estudiante);
@@ -70,8 +73,6 @@ export class FormsEstudianteAdd implements OnInit {
 
         }
     }
-    
-
 
     showToast() {
         const toast = document.getElementById('toast');
@@ -83,7 +84,6 @@ export class FormsEstudianteAdd implements OnInit {
             toast.classList.add('hide');
         }, 3000);
     }
-
     showToastExisteEstudiante() {
         const toast = document.getElementById('toastexiste');
         toast.classList.remove('hide');
@@ -104,8 +104,5 @@ export class FormsEstudianteAdd implements OnInit {
             toast.classList.remove('show');
             toast.classList.add('hide');
         }, 3000);
-    }
-
-    ngOnInit(): void {
     }
 }

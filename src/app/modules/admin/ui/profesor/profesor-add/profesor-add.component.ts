@@ -34,7 +34,8 @@ export class FormsProfesorAdd implements OnInit {
             apellido: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required]],
-            avatar: ['']
+            avatar: [''],
+            rol: ['profesor']
         });
     }
     
