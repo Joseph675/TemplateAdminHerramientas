@@ -2,6 +2,8 @@
 import { FuseNavigationItem } from '@fuse/components/navigation';
 
 export const defaultNavigation: FuseNavigationItem[] = [
+
+    
     {
         id      : 'dashboards',
         title   : 'Dashboards',
@@ -45,21 +47,29 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     }
                 ],
             },
+
+            {
+                id      : 'asistencias-interface.forms',
+                title   : 'Asistencias',
+                type    : 'collapsable',
+                icon    : 'heroicons_outline:users',
+                children: [
+                    {
+                        id   : 'asistencias-interface.forms.fields',
+                        title: 'Añadir asistencias',
+                        type : 'basic',
+                        link : '/pages/asistencias/asistencias-add',
+                    },
+                    {
+                        id   : 'asistencias-interface.forms.layouts',
+                        title: 'Ver asistencias',
+                        type : 'basic',
+                        link : '/pages/asistencias/asistencias-table',
+                    }
+                ],
+            },
           
-            {
-                id   : 'pages.profile',
-                title: 'Profile',
-                type : 'basic',
-                icon : 'heroicons_outline:user-circle',
-                link : '/pages/profile',
-            },
-            {
-                id   : 'pages.settings',
-                title: 'Settings',
-                type : 'basic',
-                icon : 'heroicons_outline:cog-8-tooth',
-                link : '/pages/settings',
-            },
+            
         ],
     },
     {

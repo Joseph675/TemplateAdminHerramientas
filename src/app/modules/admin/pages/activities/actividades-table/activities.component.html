@@ -7,26 +7,26 @@
         <div class="w-full max-w-3xl">
 
             <!-- Title -->
-            <div class="text-4xl font-extrabold tracking-tight leading-none">All Activities</div>
-            <div class="mt-1.5 text-lg text-secondary">Application wide activities are listed here as individual items, starting with the most recent.</div>
+            <div class="text-4xl font-extrabold tracking-tight leading-none">Todas las Actividades</div>
+            <div class="mt-1.5 text-lg text-secondary">Aqui podras ver todas las actividades de los profesores</div>
 
-            <ng-container *ngIf="estudiantes.length; else loading">
+            <ng-container *ngIf="actividades.length; else loading">
                 <div class="mt-8">
                   <ol>
-                    <ng-container *ngFor="let estudiante of estudiantes; trackBy: trackByFn">
+                    <ng-container *ngFor="let actividad of actividades; trackBy: trackByFn">
                       <li class="relative flex py-7">
                         <div class="absolute top-7 left-5 w-0.5 h-full -ml-px bg-gray-300 dark:bg-gray-600"></div>
                         <div class="relative flex flex-auto">
                           <div class="flex shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-gray-400"></div>
                           <div class="flex flex-col flex-auto items-start">
-                            <div>{{ estudiante.nombre }}</div>
+                            <div>{{ actividad.nombreProfesor }}</div>
                             <div class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5">
-                              <div class="text-secondary">{{ estudiante.id_estudiante }}</div>
+                              <div class="text-secondary">{{ actividad.fecha_hora_creacion }}</div>
                             </div>
                             <div class="mt-4 py-4 px-5 rounded-lg bg-gray-200 dark:bg-gray-800">
-                              <div class="font-bold">{{ estudiante.email }}</div>
+                              <div class="font-bold">{{ actividad.titulo }}</div>
                               <br>
-                              <div>{{ estudiante.rol }}</div>
+                              <div>{{ actividad.detalles_actividad }}</div>
                             </div>
                           </div>
                         </div>

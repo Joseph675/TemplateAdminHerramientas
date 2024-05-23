@@ -113,7 +113,6 @@ export class Formsmaterias_por_estudiante implements OnInit {
       this.http.post('http://localhost:8080/api/materiaestudiante', data)
         .subscribe(
           response => {
-            console.log(response);
             // Aquí puedes manejar la respuesta de tu API
             // Por ejemplo, puedes mostrar un mensaje de éxito
             this.showToast();

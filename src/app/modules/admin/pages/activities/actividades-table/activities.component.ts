@@ -17,8 +17,8 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
 
 interface PeriodicElement {
-  ID: number;
-  Nombre: string;
+  id_profesor: number;
+  nombreProfesor: string;
   CorreoElectronico: string;
   Rol: string;
   Acciones: string;
@@ -28,28 +28,57 @@ interface PeriodicElement {
   selector: 'activities-estudiantes',
   templateUrl: './activities.component.html',
   standalone: true,
-  imports: [CommonModule,MatMenuModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule, MatPaginatorModule],
+  imports: [CommonModule, MatMenuModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule, MatPaginatorModule],
 
 })
 export class TableActivities implements OnInit {
-    dataSource: MatTableDataSource<PeriodicElement>;
-    estudiantes: PeriodicElement[] = [];
+  dataSource: MatTableDataSource<PeriodicElement>;
+  actividades: PeriodicElement[] = [];
+  profesores = [];
+  id
+  profesoresMap: any = {}; // Mapa de id_profesor a nombre
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
-    this.obtenerEstudiantes();
+    this.obtenerProfesor();
+
   }
 
-  obtenerEstudiantes() {
-    this.http.get<PeriodicElement[]>('http://localhost:8080/api/estudiantes').subscribe(
-      (estudiantes: PeriodicElement[]) => {
-        this.estudiantes = estudiantes;
-        this.dataSource = new MatTableDataSource(estudiantes);
+  obtenerActividades() {
+    this.http.get<PeriodicElement[]>('http://localhost:8080/api/actividades').subscribe(
+      (actividades: PeriodicElement[]) => {
+        // Ahora tienes las actividades
+        this.actividades = actividades.map(actividad => {
+          // Obtener el nombre del profesor usando el mapa
+          actividad.nombreProfesor = this.profesoresMap[actividad.id_profesor];
+          console.log(actividad.id_profesor)
+          return actividad;
+        });
+        this.dataSource = new MatTableDataSource(actividades);
         this.dataSource.paginator = this.paginator;
+        console.log(this.actividades)
       },
-      error => console.error('Error al obtener estudiantes:', error)
+      error => console.error('Error al obtener actividades:', error)
+    );
+  }
+
+  obtenerProfesor() {
+    this.http.get('http://localhost:8080/api/profesores').subscribe(
+      (profesores: any[]) => {
+        // Crear un mapa de id_profesor a nombre
+        profesores.forEach(profesor => {
+          let id_profesor = profesor.id_profesor;
+          let nombre = profesor.nombre + ' ' + profesor.apellido;
+          this.profesoresMap[id_profesor] = nombre;
+          console.log(nombre)
+          this.obtenerActividades();
+
+        });
+      },
+      error => console.error('Error al obtener profesores:', error)
     );
   }
 

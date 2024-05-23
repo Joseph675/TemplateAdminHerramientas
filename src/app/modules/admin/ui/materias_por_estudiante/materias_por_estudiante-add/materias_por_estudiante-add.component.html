@@ -55,7 +55,7 @@
                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:user'" matPrefix></mat-icon>
                         <mat-select formControlName="id_estudiante">
                             <mat-option *ngFor="let estudiante of estudiantes"
-                                [value]="estudiante.id_estudiante">{{estudiante.nombre}}</mat-option>
+                                [value]="estudiante.id_estudiante">{{estudiante.nombre}} {{estudiante.apellido}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>

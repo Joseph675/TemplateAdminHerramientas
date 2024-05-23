@@ -92,6 +92,9 @@ export const appRoutes: Route[] = [
                     // Activities
                     { path: 'activities', loadChildren: () => import('app/modules/admin/pages/activities/activities.routes') },
 
+                    // asistencias
+                    { path: 'asistencias', loadChildren: () => import('app/modules/admin/pages/asistencias/asistencias.routes') },
+
 
                     // Profile
                     { path: 'profile', loadChildren: () => import('app/modules/admin/pages/profile/profile.routes') },
@@ -105,9 +108,9 @@ export const appRoutes: Route[] = [
             {
                 path: 'ui', children: [
 
-                      // administrador
+                    // administrador
                     { path: 'administrador', loadChildren: () => import('app/modules/admin/ui/administrador/administrador.routes') },
-           
+
                     // estudiante
                     { path: 'estudiante', loadChildren: () => import('app/modules/admin/ui/estudiante/estudiante.routes') },
 

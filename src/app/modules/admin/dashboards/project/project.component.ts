@@ -1,461 +1,212 @@
-import { CurrencyPipe, NgClass, NgFor, NgIf ,CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation  ,NgModule } from '@angular/core';
+import { CurrencyPipe, NgClass, NgFor, NgIf, CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatTableModule ,MatTableDataSource} from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ProjectService } from 'app/modules/admin/dashboards/project/project.service';
-import { ApexOptions, NgApexchartsModule } from 'ng-apexcharts';
-import { Subject, takeUntil,BehaviorSubject  } from 'rxjs';
-import { HttpClient, HttpHeaders,HttpClientModule  } from '@angular/common/http';
-
-
-export interface PeriodicElement {
-    ID: number;
-    Nombre: string;
-    CorreoElectronico: string;
-    
-  }
+import { BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @Component({
-    selector: 'project',
-    templateUrl: './project.component.html',
-    encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [HttpClientModule,CommonModule,TranslocoModule, MatIconModule, MatButtonModule, MatRippleModule, MatMenuModule, MatTabsModule, MatButtonToggleModule, NgApexchartsModule, NgFor, NgIf, MatTableModule, NgClass, CurrencyPipe],
+  selector: 'project',
+  templateUrl: './project.component.html',
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    CommonModule,
+    NgxChartsModule,
+    HttpClientModule,
+    TranslocoModule,
+    MatIconModule,
+    MatButtonModule,
+    MatRippleModule,
+    MatMenuModule,
+    MatTabsModule,
+    MatButtonToggleModule,
+    NgFor,
+    NgIf,
+    MatTableModule,
+    NgClass,
+    CurrencyPipe
+  ],
 })
 export class ProjectComponent implements OnInit, OnDestroy {
-    chartGithubIssues: ApexOptions = {};
-    chartTaskDistribution: ApexOptions = {};
-    chartBudgetDistribution: ApexOptions = {};
-    chartWeeklyExpenses: ApexOptions = {};
-    chartMonthlyExpenses: ApexOptions = {};
-    chartYearlyExpenses: ApexOptions = {};
-    data: any;
-    dataSource;
-    selectedProject: string = 'ACME Corp. Backend App';
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
-    private _contador = new BehaviorSubject<number>(0);
-    contador$ = this._contador.asObservable();
-    /**
-     * Constructor
-     */
-    constructor(
-        private http: HttpClient,
-        private _projectService: ProjectService,
-        private _router: Router,
-    ) {
-    }
+  user: any;
+  dataSource;
+  singleEstudiantes: any[] = [];
+  singleMaterias: any[] = [];
+  singleFechas: any[] = [];
+  estudiantes: any = {};
+  materias: any = {};
+  view: [number, number] = [400, 300];
 
+  private _contador = new BehaviorSubject<number>(0);
+  private _contadorestu = new BehaviorSubject<number>(0);
+  private _contadorprofe = new BehaviorSubject<number>(0);
+  private _contadormate = new BehaviorSubject<number>(0);
+  private _contadorasis = new BehaviorSubject<number>(0);
 
-    ngOnInit(): void {
-        this.obtenerAdministradores();
+  contador$ = this._contador.asObservable();
+  contadorestu$ = this._contadorestu.asObservable();
+  contadorprofe$ = this._contadorprofe.asObservable();
+  contadormate$ = this._contadormate.asObservable();
+  contadorasis$ = this._contadorasis.asObservable();
 
-        // Get the data
-        this._projectService.data$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((data) => {
-                // Store the data
-                this.data = data;
+  // options
+  showLegend: boolean = true;
+  showLabels: boolean = true;
+  explodeSlices: boolean = false;
+  doughnut: boolean = false;
+  gradient: boolean = false;
 
-                // Prepare the chart data
-                this._prepareChartData();
-            });
+  colorScheme = {
+    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+  };
 
-        // Attach SVG fill fixer to all ApexCharts
-        window['Apex'] = {
-            chart: {
-                events: {
-                    mounted: (chart: any, options?: any): void => {
-                        this._fixSvgFill(chart.el);
-                    },
-                    updated: (chart: any, options?: any): void => {
-                        this._fixSvgFill(chart.el);
-                    },
-                },
-            },
-        };
-    }
+  constructor(
+    private http: HttpClient,
+    private _projectService: ProjectService,
+    private _router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
+  onSelect(event: any) {
+    console.log(event);
+  }
 
-    obtenerAdministradores() {
-        this.http.get('http://localhost:8080/api/administradores').subscribe(
-            (administradores: PeriodicElement[]) => {
-                let i = 0;
-                do {
-                    let administrador = administradores[i];
-                    i++;
-                } while (i < administradores.length);
-                this._contador.next(i);
-                this.dataSource = new MatTableDataSource(administradores); // Usa MatTableDataSource
-            },
-            error => console.error('Error al obtener administradores:', error)
-        );
-    }
-    
+  ngOnDestroy(): void {
+    // Implementa el método de limpieza según sea necesario
+  }
 
-    /**
-     * On destroy
-     */
-    ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
-    }
+  ngOnInit(): void {
+    this.obtenerAdministradores();
+    this.obtenerEstudiantes();
+    this.obtenerProfesores();
+    this.obtenerMaterias();
+    this.obtenerasistencias();
+    this.user = JSON.parse(localStorage.getItem('user'));
+  }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
+  obtenerAdministradores() {
+    this.http.get('http://localhost:8080/api/administradores').subscribe(
+      (administradores: any) => {
+        let i = 0;
+        do {
+          let administrador = administradores[i];
+          i++;
+        } while (i < administradores.length);
+        this._contador.next(i);
+        console.log('Contador de administradores:', i);
+      },
+      error => console.error('Error al obtener administradores:', error)
+    );
+  }
 
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any {
-        return item.id || index;
-    }
+  obtenerEstudiantes() {
+    this.http.get('http://localhost:8080/api/estudiantes').subscribe(
+      (estudiantes: any[]) => {
+        for (let i = 0; i < estudiantes.length; i++) {
+          let estudiante = estudiantes[i];
+          this.estudiantes[estudiante.id_estudiante] = estudiante.nombre + ' ' + estudiante.apellido;
+        }
+        this._contadorestu.next(estudiantes.length);
+        console.log('Contador de estudiantes:', estudiantes.length);
+        console.log('Estudiantes:', this.estudiantes);
+      },
+      error => console.error('Error al obtener estudiantes:', error)
+    );
+  }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Private methods
-    // -----------------------------------------------------------------------------------------------------
+  obtenerProfesores() {
+    this.http.get('http://localhost:8080/api/profesores').subscribe(
+      (profesores: any) => {
+        let i = 0;
+        do {
+          let profesor = profesores[i];
+          i++;
+        } while (i < profesores.length);
+        this._contadorprofe.next(i);
+        console.log('Contador de profesores:', i);
+      },
+      error => console.error('Error al obtener profesores:', error)
+    );
+  }
 
-    /**
-     * Fix the SVG fill references. This fix must be applied to all ApexCharts
-     * charts in order to fix 'black color on gradient fills on certain browsers'
-     * issue caused by the '<base>' tag.
-     *
-     * Fix based on https://gist.github.com/Kamshak/c84cdc175209d1a30f711abd6a81d472
-     *
-     * @param element
-     * @private
-     */
-    private _fixSvgFill(element: Element): void {
-        // Current URL
-        const currentURL = this._router.url;
+  obtenerMaterias() {
+    this.http.get('http://localhost:8080/api/materias').subscribe(
+      (materias: any[]) => {
+        for (let i = 0; i < materias.length; i++) {
+          let materia = materias[i];
+          this.materias[materia.idMateria] = materia.nombreMateria;
+        }
+        this._contadormate.next(materias.length);
+        console.log('Contador de materias:', materias.length);
+        console.log('Materias:', this.materias);
+      },
+      error => console.error('Error al obtener materias:', error)
+    );
+  }
 
-        // 1. Find all elements with 'fill' attribute within the element
-        // 2. Filter out the ones that doesn't have cross reference so we only left with the ones that use the 'url(#id)' syntax
-        // 3. Insert the 'currentURL' at the front of the 'fill' attribute value
-        Array.from(element.querySelectorAll('*[fill]'))
-            .filter(el => el.getAttribute('fill').indexOf('url(') !== -1)
-            .forEach((el) => {
-                const attrVal = el.getAttribute('fill');
-                el.setAttribute('fill', `url(${currentURL}${attrVal.slice(attrVal.indexOf('#'))}`);
-            });
-    }
+  obtenerasistencias() {
+    this.http.get('http://localhost:8080/api/asistencias').subscribe(
+      (asistencias: any[]) => {
+        console.log('Respuesta de la API:', asistencias); // Verificar la respuesta completa
+        if (asistencias.length > 0) {
+            console.log('Ejemplo de elemento de la API:', asistencias[0]); // Verificar la estructura de un solo elemento
+        }
 
-    /**
-     * Prepare the chart data from the data
-     *
-     * @private
-     */
-    private _prepareChartData(): void {
-        // Github issues
-        this.chartGithubIssues = {
-            chart: {
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'line',
-                toolbar: {
-                    show: false,
-                },
-                zoom: {
-                    enabled: false,
-                },
-            },
-            colors: ['#64748B', '#94A3B8'],
-            dataLabels: {
-                enabled: true,
-                enabledOnSeries: [0],
-                background: {
-                    borderWidth: 0,
-                },
-            },
-            grid: {
-                borderColor: 'var(--fuse-border)',
-            },
-            labels: this.data.githubIssues.labels,
-            legend: {
-                show: false,
-            },
-            plotOptions: {
-                bar: {
-                    columnWidth: '50%',
-                },
-            },
-            series: this.data.githubIssues.series,
-            states: {
-                hover: {
-                    filter: {
-                        type: 'darken',
-                        value: 0.75,
-                    },
-                },
-            },
-            stroke: {
-                width: [3, 0],
-            },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark',
-            },
-            xaxis: {
-                axisBorder: {
-                    show: false,
-                },
-                axisTicks: {
-                    color: 'var(--fuse-border)',
-                },
-                labels: {
-                    style: {
-                        colors: 'var(--fuse-text-secondary)',
-                    },
-                },
-                tooltip: {
-                    enabled: false,
-                },
-            },
-            yaxis: {
-                labels: {
-                    offsetX: -16,
-                    style: {
-                        colors: 'var(--fuse-text-secondary)',
-                    },
-                },
-            },
-        };
+        let asistenciaCountsEstudiantes = {};
+        let asistenciaCountsMaterias = {};
+        let asistenciaCountsFechas = {};
 
-        // Task distribution
-        this.chartTaskDistribution = {
-            chart: {
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'polarArea',
-                toolbar: {
-                    show: false,
-                },
-                zoom: {
-                    enabled: false,
-                },
-            },
-            labels: this.data.taskDistribution.labels,
-            legend: {
-                position: 'bottom',
-            },
-            plotOptions: {
-                polarArea: {
-                    spokes: {
-                        connectorColors: 'var(--fuse-border)',
-                    },
-                    rings: {
-                        strokeColor: 'var(--fuse-border)',
-                    },
-                },
-            },
-            series: this.data.taskDistribution.series,
-            states: {
-                hover: {
-                    filter: {
-                        type: 'darken',
-                        value: 0.75,
-                    },
-                },
-            },
-            stroke: {
-                width: 2,
-            },
-            theme: {
-                monochrome: {
-                    enabled: true,
-                    color: '#93C5FD',
-                    shadeIntensity: 0.75,
-                    shadeTo: 'dark',
-                },
-            },
-            tooltip: {
-                followCursor: true,
-                theme: 'dark',
-            },
-            yaxis: {
-                labels: {
-                    style: {
-                        colors: 'var(--fuse-text-secondary)',
-                    },
-                },
-            },
-        };
+        asistencias.forEach((asistencia: any) => {
+          if (asistencia.asistio === '1') {
+            // Contar por estudiantes
+            const nombreEstudiante = this.estudiantes[asistencia.id_estudiante] || `Estudiante ${asistencia.id_estudiante}`;
+            asistenciaCountsEstudiantes[nombreEstudiante] = 
+              (asistenciaCountsEstudiantes[nombreEstudiante] || 0) + 1;
+            // Contar por materias
+            const nombreMateria = this.materias[asistencia.id_materia] || `Materia ${asistencia.id_materia}`;
+            asistenciaCountsMaterias[nombreMateria] = 
+              (asistenciaCountsMaterias[nombreMateria] || 0) + 1;
+            // Contar por fechas
+            asistenciaCountsFechas[asistencia.fecha] = 
+              (asistenciaCountsFechas[asistencia.fecha] || 0) + 1;
+          }
+        });
 
-        // Budget distribution
-        this.chartBudgetDistribution = {
-            chart: {
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'radar',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            colors: ['#818CF8'],
-            dataLabels: {
-                enabled: true,
-                formatter: (val: number): string | number => `${val}%`,
-                textAnchor: 'start',
-                style: {
-                    fontSize: '13px',
-                    fontWeight: 500,
-                },
-                background: {
-                    borderWidth: 0,
-                    padding: 4,
-                },
-                offsetY: -15,
-            },
-            markers: {
-                strokeColors: '#818CF8',
-                strokeWidth: 4,
-            },
-            plotOptions: {
-                radar: {
-                    polygons: {
-                        strokeColors: 'var(--fuse-border)',
-                        connectorColors: 'var(--fuse-border)',
-                    },
-                },
-            },
-            series: this.data.budgetDistribution.series,
-            stroke: {
-                width: 2,
-            },
-            tooltip: {
-                theme: 'dark',
-                y: {
-                    formatter: (val: number): string => `${val}%`,
-                },
-            },
-            xaxis: {
-                labels: {
-                    show: true,
-                    style: {
-                        fontSize: '12px',
-                        fontWeight: '500',
-                    },
-                },
-                categories: this.data.budgetDistribution.categories,
-            },
-            yaxis: {
-                max: (max: number): number => parseInt((max + 10).toFixed(0), 10),
-                tickAmount: 7,
-            },
-        };
+        this.singleEstudiantes = Object.keys(asistenciaCountsEstudiantes).map(key => ({
+          name: key,
+          value: asistenciaCountsEstudiantes[key]
+        }));
 
-        // Weekly expenses
-        this.chartWeeklyExpenses = {
-            chart: {
-                animations: {
-                    enabled: false,
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            colors: ['#22D3EE'],
-            series: this.data.weeklyExpenses.series,
-            stroke: {
-                curve: 'smooth',
-            },
-            tooltip: {
-                theme: 'dark',
-            },
-            xaxis: {
-                type: 'category',
-                categories: this.data.weeklyExpenses.labels,
-            },
-            yaxis: {
-                labels: {
-                    formatter: (val): string => `$${val}`,
-                },
-            },
-        };
+        this.singleMaterias = Object.keys(asistenciaCountsMaterias).map(key => ({
+          name: key,
+          value: asistenciaCountsMaterias[key]
+        }));
 
-        // Monthly expenses
-        this.chartMonthlyExpenses = {
-            chart: {
-                animations: {
-                    enabled: false,
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            colors: ['#4ADE80'],
-            series: this.data.monthlyExpenses.series,
-            stroke: {
-                curve: 'smooth',
-            },
-            tooltip: {
-                theme: 'dark',
-            },
-            xaxis: {
-                type: 'category',
-                categories: this.data.monthlyExpenses.labels,
-            },
-            yaxis: {
-                labels: {
-                    formatter: (val): string => `$${val}`,
-                },
-            },
-        };
+        this.singleFechas = Object.keys(asistenciaCountsFechas).map(key => ({
+          name: key,
+          value: asistenciaCountsFechas[key]
+        }));
 
-        // Yearly expenses
-        this.chartYearlyExpenses = {
-            chart: {
-                animations: {
-                    enabled: false,
-                },
-                fontFamily: 'inherit',
-                foreColor: 'inherit',
-                height: '100%',
-                type: 'line',
-                sparkline: {
-                    enabled: true,
-                },
-            },
-            colors: ['#FB7185'],
-            series: this.data.yearlyExpenses.series,
-            stroke: {
-                curve: 'smooth',
-            },
-            tooltip: {
-                theme: 'dark',
-            },
-            xaxis: {
-                type: 'category',
-                categories: this.data.yearlyExpenses.labels,
-            },
-            yaxis: {
-                labels: {
-                    formatter: (val): string => `$${val}`,
-                },
-            },
-        };
-    }
+        console.log('Datos para el gráfico de estudiantes:', this.singleEstudiantes); 
+        console.log('Datos para el gráfico de materias:', this.singleMaterias); 
+        console.log('Datos para el gráfico de fechas:', this.singleFechas); 
+
+        this._contadorasis.next(this.singleEstudiantes.length);
+        this.cdr.detectChanges(); // Forzar la detección de cambios
+        console.log('Contador de asistencias:', this.singleEstudiantes.length);
+      },
+      error => console.error('Error al obtener asistencias:', error)
+    );
+  }
 }

@@ -31,7 +31,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
 {
     isScreenSmall: boolean;
     navigation: Navigation;
-    user: User;
+    user: any;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     /**
@@ -69,6 +69,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+        this.user = JSON.parse(localStorage.getItem('user'));
         // Subscribe to navigation data
         this._navigationService.navigation$
             .pipe(takeUntil(this._unsubscribeAll))

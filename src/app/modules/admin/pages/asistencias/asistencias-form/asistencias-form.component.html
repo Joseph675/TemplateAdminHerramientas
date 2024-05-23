@@ -25,17 +25,17 @@
             <!-- Breadcrumbs -->
             <div class="flex flex-wrap items-center font-medium">
                 <div>
-                    <a class="whitespace-nowrap text-primary-500">Estudiantes</a>
+                    <a class="whitespace-nowrap text-primary-500">Asistencias</a>
                 </div>
                 <div class="flex items-center ml-1 whitespace-nowrap">
                     <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
-                    <a class="ml-1 text-primary-500">Añadir Estudiantes</a>
+                    <a class="ml-1 text-primary-500">Añadir Asistencias</a>
                 </div>
             </div>
             <!-- Title -->
             <div class="mt-2">
                 <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    Añadir Estudiantes
+                    Añadir Asistencias
                 </h2>
             </div>
         </div>
@@ -46,67 +46,50 @@
 
         <div class="max-w-3xl">
 
-            <form class="flex flex-col mt-4 px-8 pt-10 bg-card shadow rounded overflow-hidden" [formGroup]="form"
-                (ngSubmit)="registrar()">
+            <form class="flex flex-col mt-4 px-8 pt-10 bg-card shadow rounded overflow-hidden" [formGroup]="form" (ngSubmit)="registrar()">
                 <br>
-
                 <div class="flex">
                     <mat-form-field class="w-full">
                         <mat-label>Seleccionar Profesor</mat-label>
-                
                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:user'" matPrefix></mat-icon>
                         <mat-select formControlName="id_profesor" (selectionChange)="onProfesorSeleccionado($event.value)">
-                            <mat-option *ngFor="let profesor of profesores"
-                                [value]="profesor.id">{{profesor.nombre}}</mat-option>
+                            <mat-option *ngFor="let profesor of profesores" [value]="profesor.id_profesor">{{ profesor.nombre }}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-
+            
                 <div class="flex">
                     <mat-form-field class="w-full">
                         <mat-label>Seleccionar Materia</mat-label>
                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:book-open'" matPrefix></mat-icon>
-                        <mat-select formControlName="id_materia">
-                            <mat-option *ngFor="let materia of materiasquiero" [value]="materia.idMateria">
-                                {{materia.nombreMateria}}
-                            </mat-option>
+                        <mat-select formControlName="id_materia" (selectionChange)="onMateriaProfesorSeleccionada($event.value)">
+                            <mat-option *ngFor="let materia of materiasquiero" [value]="materia.idMateria">{{ materia.nombreMateria }}</mat-option>
                         </mat-select>
                     </mat-form-field>
-                    
-                    
                 </div>
-                
-                
-                
-
-
-
+            
                 <div class="flex">
-                    <mat-form-field class="flex-auto">
-                        <input matInput formControlName="titulo" [placeholder]="'titulo'">
-                        <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
+                    <mat-form-field class="w-full">
+                        <mat-label>Seleccionar Estudiantes</mat-label>
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:book-open'" matPrefix></mat-icon>
+                        <mat-select formControlName="id_estudiante">
+                            <mat-option *ngFor="let estudiante of estudiantesDeLaMateria" [value]="estudiante.id_estudiante">{{ estudiante.nombre }}</mat-option>
+                        </mat-select>
                     </mat-form-field>
                 </div>
-
+            
                 <div class="flex">
-                    <mat-form-field class="flex-auto">
-                        <textarea matInput formControlName="detalles_actividad" [placeholder]="'detalles_actividad'"></textarea>
-                        <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
-                    </mat-form-field>
+                    <p><mat-slide-toggle formControlName="asistio">Asistio</mat-slide-toggle></p>
                 </div>
-                
-
-
-
-
-
+            
                 <div class="flex items-center justify-end border-t -mx-8 mt-8 px-8 py-5 bg-gray-50 dark:bg-gray-700">
-
-                    <button class="px-6 ml-3" mat-flat-button [color]="'primary'">
-                        Registrar
-                    </button>
+                    <button class="px-6 ml-3" mat-flat-button [color]="'primary'">Registrar</button>
                 </div>
             </form>
+            
+            
+            
+            
 
         </div>
 

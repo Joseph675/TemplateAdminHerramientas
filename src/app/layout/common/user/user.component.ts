@@ -50,6 +50,7 @@ export class UserComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+        this.user = JSON.parse(localStorage.getItem('user'));
         // Subscribe to user changes
         this._userService.user$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -99,8 +100,12 @@ export class UserComponent implements OnInit, OnDestroy
     /**
      * Sign out
      */
-    signOut(): void
-    {
+    signOut(): void {
+        // Remove the user from the local storage
+        localStorage.removeItem('user');
+    
+        // Navigate to the sign out page
         this._router.navigate(['/sign-out']);
     }
+    
 }

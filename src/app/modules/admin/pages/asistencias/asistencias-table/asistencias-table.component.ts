@@ -14,28 +14,36 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
 
-
+interface PeriodicElement {
+  id_profesor: number;
+  nombreProfesor: string;
+  CorreoElectronico: string;
+  Rol: string;
+  Acciones: string;
+}
 
 @Component({
-  selector: 'administrador-table',
-  styleUrl: 'administrador-table.component.scss',
-  templateUrl: 'administrador-table.component.html',
+  selector: 'asistencias-table',
+  templateUrl: './asistencias-table.component.html',
   standalone: true,
-  imports: [MatMenuModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule, MatPaginatorModule],
+  imports: [CommonModule,MatMenuModule, MatTableModule, MatButtonModule, MatDividerModule, MatIconModule, MatDialogModule, MatPaginatorModule],
 })
-export class TableAdministrador implements OnInit {
-
-  displayedColumns: string[] = ['ID', 'Nombre', 'CorreoElectronico', 'Rol', 'Acciones'];
+export class TablaAsistencias implements OnInit {
+  displayedColumns: string[] = ['ID', 'Nombre', 'Materia','Fecha','Asisticio'];
   dataSource;
-  administradorAEditar = null; // Agrega esta línea
+  estudiantes: any[] = [];
+  materias: any[] = [];
+  asistencias: any[] = [];
+  estudianteAEditar = null; // Agrega esta línea
   @ViewChild('miModal') miModal: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   constructor(private toastService: ToastService, private http: HttpClient, private EstudiantesService: EstudiantesService, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.EstudiantesService.estudianteActualizado$.subscribe(() => {
-      this.obtenerAdministradores();
+      this.obtenerEstudiantes();
     });
 
     this.toastService.showToastEditar.subscribe(() => {
@@ -50,37 +58,74 @@ export class TableAdministrador implements OnInit {
       this.showToastEliminar();
     });
 
-    this.obtenerAdministradores();
+    this.obtenerEstudiantes();
+    this.obtenerMaterias();
+    this.obtenerAsistencias();
+
   }
 
-  obtenerAdministradores() {
-    this.http.get('http://localhost:8080/api/administradores').subscribe(
-      (administradores: any) => {
-        for (let i = 0; i < administradores.length; i++) {
-          let administrador = administradores[i];
-        }
-        this.dataSource = new MatTableDataSource(administradores); // Usa MatTableDataSource
-        this.dataSource.paginator = this.paginator; // Asigna el paginador aquí
+  obtenerEstudiantes() {
+    this.http.get('http://localhost:8080/api/estudiantes').subscribe(
+      (estudiantes: any[]) => {
+        this.estudiantes = estudiantes;
+        this.actualizarAsistenciasConNombres();
       },
       error => console.error('Error al obtener estudiantes:', error)
     );
   }
 
+  obtenerMaterias() {
+    this.http.get('http://localhost:8080/api/materias').subscribe(
+      (materias: any[]) => {
+        this.materias = materias;
+        console.log(materias)
+        this.actualizarAsistenciasConNombres();
+      },
+      error => console.error('Error al obtener materias:', error)
+    );
+  }
 
+  obtenerAsistencias() {
+    this.http.get('http://localhost:8080/api/asistencias').subscribe(
+      (asistencias: any[]) => {
+        this.asistencias = asistencias;
+        this.actualizarAsistenciasConNombres();
+      },
+      error => console.error('Error al obtener asistencias:', error)
+    );
+  }
 
-  openDialogAdministrador(administrador) {
-    this.administradorAEditar = administrador;
-    const dialogRef = this.dialog.open(AdministradorEditarModal, {
-      data: { administradorAEditar: this.administradorAEditar }
+  actualizarAsistenciasConNombres() {
+    if (this.estudiantes.length && this.materias.length && this.asistencias.length) {
+      this.asistencias = this.asistencias.map(asistencia => {
+        const estudiante = this.estudiantes.find(e => e.id_estudiante === asistencia.id_estudiante);
+        const materia = this.materias.find(m => m.idMateria === asistencia.id_materia);
+
+        return {
+          ...asistencia,
+          nombre_estudiante: estudiante ? estudiante.nombre + ' ' + estudiante.apellido : 'Desconocido',
+          nombre_materia: materia ? materia.nombreMateria : 'Desconocido'
+        };
+      });
+      console.log(this.asistencias)
+      this.dataSource = new MatTableDataSource(this.asistencias);
+      this.dataSource.paginator = this.paginator;
+    }
+  }
+
+  openDialogEstudiante(estudiante) {
+    this.estudianteAEditar = estudiante;
+    const dialogRef = this.dialog.open(EstudianteEditarModal, {
+      data: { estudianteAEditar: this.estudianteAEditar }
     });
     dialogRef.afterClosed().subscribe(result => {
       console.log(`Dialog result: ${result}`);
     });
   }
 
-  openDialogEliminar(id_administrador): void {
-    const dialogRef = this.dialog.open(AdministradorEliminarModal, {
-      data: { ID: id_administrador }  // Pasar el ID al diálogo
+  openDialogEliminar(id_estudiante): void {
+    const dialogRef = this.dialog.open(EstudiateEliminarModal, {
+      data: { ID: id_estudiante }  // Pasar el ID al diálogo
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -125,15 +170,15 @@ export class TableAdministrador implements OnInit {
 
 
   exportarexcel() {
-    window.location.href = 'http://localhost:8080/api/administradores/exportExcel';
+    window.location.href = 'http://localhost:8080/api/asistencias/exportExcel';
   }
 
   exportarword() {
-    window.location.href = 'http://localhost:8080/api/administradores/exportWord';
+    window.location.href = 'http://localhost:8080/api/asistencias/exportWord';
   }
 
   exportartxt() {
-    window.location.href = 'http://localhost:8080/api/administradores/exportTxt';
+    window.location.href = 'http://localhost:8080/api/asistencias/exportTxt';
   }
 
 }
@@ -142,39 +187,39 @@ export class TableAdministrador implements OnInit {
 
 @Component({
   selector: 'dialog-content-example-dialog',
-  templateUrl: 'administrador-edit-modal.component.html',
-  styleUrl: 'administrador-table.component.scss',
+  templateUrl: 'materias_por_estudiante-delete-modal.component.html',
+  styleUrl: 'asistencias-table.component.scss',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
 })
-export class AdministradorEditarModal {
+export class EstudianteEditarModal {
   form: FormGroup;
 
 
   constructor(private toastService: ToastService,
-    public dialogRef: MatDialogRef<AdministradorEditarModal>,
+    public dialogRef: MatDialogRef<EstudianteEditarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient, private EstudiantesService: EstudiantesService
   ) {
 
     this.form = new FormGroup({
-      'id_administrador': new FormControl(this.data.administradorAEditar.id_administrador),
-      'nombre': new FormControl(this.data.administradorAEditar.nombre),
-      'apellido': new FormControl(this.data.administradorAEditar.apellido),
-      'email': new FormControl(this.data.administradorAEditar.email)
+      'id_estudiante': new FormControl(this.data.estudianteAEditar.id_estudiante),
+      'nombre': new FormControl(this.data.estudianteAEditar.nombre),
+      'apellido': new FormControl(this.data.estudianteAEditar.apellido),
+      'email': new FormControl(this.data.estudianteAEditar.email)
     });
   }
 
   guardarCambios() {
-    this.actualizarAdministrador(this.form.value).subscribe(
+    this.actualizarEstudiante(this.form.value).subscribe(
       () => {
-        console.log('Administrador actualizado:', this.form.value.id_administrador);
+        console.log('Estudiante actualizado:', this.form.value.id_estudiante);
         this.EstudiantesService.estudianteActualizado$.next();
         this.toastService.showEditar();
         this.dialogRef.close(this.form.value);
       },
       error => {
-        console.error('Error al actualizar Administrador:', error);
+        console.error('Error al actualizar Estudiante:', error);
         this.dialogRef.close(this.form.value);
         this.toastService.showEmail();
 
@@ -183,8 +228,8 @@ export class AdministradorEditarModal {
   }
 
 
-  actualizarAdministrador(administrador) {
-    return this.http.put(`http://localhost:8080/api/administradores/${administrador.id_administrador}`, administrador, { responseType: 'text' });
+  actualizarEstudiante(estudiante) {
+    return this.http.put(`http://localhost:8080/api/estudiantes/${estudiante.id_estudiante}`, estudiante, { responseType: 'text' });
   }
 
 
@@ -193,8 +238,8 @@ export class AdministradorEditarModal {
 
 @Component({
   selector: 'dialog-overview-example-dialog',
-  templateUrl: 'administrador-delete-modal.component.html',
-  styleUrl: 'administrador-table.component.scss',
+  templateUrl: 'materias_por_estudiante-delete-modal.component.html',
+  styleUrl: 'asistencias-table.component.scss',
   standalone: true,
   imports: [
     MatFormFieldModule,
@@ -208,8 +253,8 @@ export class AdministradorEditarModal {
     MatIconModule
   ],
 })
-export class AdministradorEliminarModal {
-  constructor(private toastService: ToastService, public dialogRef: MatDialogRef<AdministradorEliminarModal>,
+export class EstudiateEliminarModal {
+  constructor(private toastService: ToastService, public dialogRef: MatDialogRef<EstudiateEliminarModal>,
     @Inject(MAT_DIALOG_DATA) public data: any,  // Inyectar los datos del diálogo
     private http: HttpClient,
     private EstudiantesService: EstudiantesService
@@ -219,12 +264,12 @@ export class AdministradorEliminarModal {
     this.dialogRef.close();
   }
 
-  eliminarAdministrador() {
+  eliminarEstudiante() {
     const ID = this.data.ID;
 
-    this.http.delete(`http://localhost:8080/api/administradores/${ID}`,).subscribe(
+    this.http.delete(`http://localhost:8080/api/estudiantes/${ID}`,).subscribe(
       () => {
-        console.log('Administrador eliminado:', ID);
+        console.log('Estudiante eliminado:', ID);
         this.EstudiantesService.estudianteActualizado$.next();
         this.toastService.showEliminar();
 
@@ -235,4 +280,3 @@ export class AdministradorEliminarModal {
 
 
 }
-

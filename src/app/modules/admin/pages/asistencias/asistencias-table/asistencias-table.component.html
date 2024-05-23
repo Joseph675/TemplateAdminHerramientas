@@ -1,0 +1,87 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
+      <div class="flex-1 min-w-0">
+          <!-- Breadcrumbs -->
+          <div class="flex flex-wrap items-center font-medium">
+              <div>
+                  <a class="whitespace-nowrap text-primary-500">Asistencias</a>
+              </div>
+              <div class="flex items-center ml-1 whitespace-nowrap">
+                  <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                  <a class="ml-1 text-primary-500">Ver Asistencias</a>
+              </div>
+          </div>
+          <!-- Title -->
+          <div class="mt-2 flex justify-between items-center"> <!-- Agrega las clases flex, justify-between y items-center -->
+              <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                  Ver Asistencias
+              </h2>
+              <button mat-button [matMenuTriggerFor]="menu" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Exportar Asistencias</button>
+              <mat-menu #menu="matMenu">
+                  <button (click)="exportarexcel()" mat-menu-item>Excel</button>
+                  <button (click)="exportarword()" mat-menu-item>Word</button>
+                  <button (click)="exportartxt()" mat-menu-item>Txt</button>
+
+              </mat-menu>
+          </div>
+      </div>
+  </div>
+  
+
+
+  <div class="flex-auto p-6 sm:p-10">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 table-margin"
+          style="border-radius: 10px !important;">
+
+          <ng-container matColumnDef="ID">
+              <th mat-header-cell *matHeaderCellDef> No. </th>
+              <td mat-cell *matCellDef="let estudiante; let i = index"> {{i + 1}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Nombre">
+              <th mat-header-cell *matHeaderCellDef class="centered"> Nombre Estudiante </th>
+              <td mat-cell *matCellDef="let estudiante" class="centered">  {{ estudiante.nombre_estudiante }} {{ estudiante.apellido }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Materia">
+              <th mat-header-cell *matHeaderCellDef class="centered"> Materia </th>
+              <td mat-cell *matCellDef="let estudiante" class="centered"> {{estudiante.nombre_materia}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="Fecha">
+            <th mat-header-cell *matHeaderCellDef class="centered"> Fecha </th>
+            <td mat-cell *matCellDef="let estudiante" class="centered"> {{estudiante.fecha}} </td>
+        </ng-container>
+
+         
+        <ng-container matColumnDef="Asisticio">
+            <th mat-header-cell *matHeaderCellDef class="centered"> Asistió </th>
+            <td mat-cell *matCellDef="let estudiante" class="centered">
+                {{ estudiante.asistio == 1 || estudiante.asistio == true ? 'SI' : 'NO' }}
+            </td>
+        </ng-container>
+        
+        
+        
+        
+    
+
+
+         
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+          aria-label="Select page of periodic elements">
+      </mat-paginator>
+  </div>
+
+
+
+
+
+
+</div>

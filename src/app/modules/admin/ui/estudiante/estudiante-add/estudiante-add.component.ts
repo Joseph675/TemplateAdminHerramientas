@@ -88,7 +88,6 @@ export class FormsEstudianteAdd implements OnInit {
         const toast = document.getElementById('toastexiste');
         toast.classList.remove('hide');
         toast.classList.add('show');
-    
         setTimeout(() => {
             toast.classList.remove('show');
             toast.classList.add('hide');
@@ -99,7 +98,6 @@ export class FormsEstudianteAdd implements OnInit {
         const toast = document.getElementById('toastformulario');
         toast.classList.remove('hide');
         toast.classList.add('show');
-    
         setTimeout(() => {
             toast.classList.remove('show');
             toast.classList.add('hide');

@@ -17,7 +17,7 @@
             </fuse-alert>
 
             <!-- Sign in form -->
-            <form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
+            <form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm" (ngSubmit)="signIn($event)">
 
                 <!-- Email field -->
                 <mat-form-field class="w-full">
@@ -48,19 +48,22 @@
                     </mat-error>
                 </mat-form-field>
 
-                <!-- Actions -->
-                <div class="inline-flex items-center justify-between w-full mt-1.5">
-                    <mat-checkbox class="-ml-2" [color]="'primary'" [formControlName]="'rememberMe'">
-                        Remember me
-                    </mat-checkbox>
-                    <a class="text-md font-medium text-primary-500 hover:underline"
-                        [routerLink]="['/forgot-password']">Forgot password?
-                    </a>
-                </div>
+              
+                
+
+                <mat-form-field class="w-full"  style="margin-right: 10px;">
+                    <mat-label>Rol</mat-label>
+                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:user-circle'" matPrefix></mat-icon>
+                    <mat-select formControlName="userType">
+                        <mat-option value="admin">Administrador</mat-option>
+                        <mat-option value="profesor">Profesor</mat-option>
+                        <mat-option value="estudiante">Estudiante</mat-option>
+                    </mat-select>
+                </mat-form-field>
 
                 <!-- Submit button -->
                 <button class="fuse-mat-button-large w-full mt-6" mat-flat-button [color]="'primary'"
-                    [disabled]="signInForm.disabled" (click)="signIn()">
+                    [disabled]="signInForm.disabled" type="submit">
                     <span *ngIf="!signInForm.disabled">
                         Ingresar
                     </span>
@@ -68,7 +71,9 @@
                         [mode]="'indeterminate'"></mat-progress-spinner>
                 </button>
 
+
             </form>
+
         </div>
     </div>
     <div
@@ -97,7 +102,7 @@
         <!-- Content -->
         <div class="z-10 relative w-full max-w-2xl">
             <div class="text-7xl font-bold leading-none text-gray-100">
-                <div>Bienvenido a</div>
+                <div>Bienvenido a EduSync</div>
             </div>
 
         </div>
